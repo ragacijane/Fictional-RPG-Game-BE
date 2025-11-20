@@ -29,8 +29,8 @@ FROM node:20-alpine AS account
 
 WORKDIR /usr/src/app
 
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app ./
 
 EXPOSE 3001
-CMD ["node", "dist/apps/account/main.js"]
+
+CMD ["sh", "-c", "npm run migration:run:account && npm run seed:account && node dist/apps/account/main.js"]

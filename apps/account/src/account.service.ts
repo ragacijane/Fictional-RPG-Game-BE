@@ -1,22 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { AccountDto } from './dto/account.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Account } from './entities/account.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AccountService {
-  private accounts: AccountDto[] = [
-    {
-      username: 'Test1',
-      password: 'Pass1',
-      role: 'GameMaster',
-    },
-    {
-      username: 'Test2',
-      password: 'Pass2',
-      role: 'Standard',
-    },
-  ];
+  constructor(
+    @InjectRepository(Account)
+    private readonly accountRepository: Repository<Account>,
+  ) {}
 
-  findAll(): AccountDto[] {
-    return this.accounts;
+  async findAll() {
+    return await this.accountRepository.find();
   }
 }

@@ -1,0 +1,38 @@
+import 'reflect-metadata';
+import AccountDataSource from '../typeorm.config';
+import { Account } from './entities/account.entity';
+
+async function seed() {
+  await AccountDataSource.initialize();
+
+  const repository = AccountDataSource.getRepository(Account);
+
+  const count = await repository.count();
+  if (count > 0) {
+    console.log('Accounts already exist, skipping seed.');
+    await AccountDataSource.destroy();
+    return;
+  }
+
+  const acc1 = repository.create({
+    email: 'luka1@test.com',
+    passwordHash: 'test-password-1',
+    username: 'lukaTest1',
+  });
+
+  const acc2 = repository.create({
+    email: 'luka2@test.com',
+    passwordHash: 'test-password-2',
+    username: 'lukaTest2',
+  });
+
+  await repository.save([acc1, acc2]);
+
+  console.log('Seed completed!');
+  await AccountDataSource.destroy();
+}
+
+seed().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
