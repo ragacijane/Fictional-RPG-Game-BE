@@ -11,7 +11,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'COMBAT_CLIENT',
         transport: Transport.TCP,
         options: {
-          host: 'combat',
+          // host: 'combat',
           port: 3003,
         },
       },

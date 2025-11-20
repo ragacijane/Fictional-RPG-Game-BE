@@ -13,6 +13,7 @@ import {
 import { Class } from './class.entity';
 import { Item } from './item.entity';
 import { CharacterItem } from './character-item.entity';
+import { Account } from './account.entity';
 
 @Entity('characters')
 export class Character {
@@ -40,6 +41,9 @@ export class Character {
   @Column({ type: 'int', default: 5 })
   baseFaith: number;
 
+  @Column({ type: 'boolean', default: false })
+  inCombat: boolean;
+
   @ManyToOne(() => Class, { eager: true })
   @JoinColumn({ name: 'classId' })
   class: Class;
@@ -49,6 +53,13 @@ export class Character {
 
   @OneToMany(() => CharacterItem, (ci) => ci.character, { eager: true })
   items: CharacterItem[];
+
+  @ManyToOne(() => Account, { eager: true })
+  @JoinColumn({ name: 'ownerId' })
+  owner: Account;
+
+  @Column()
+  ownerId: string;
 
   @CreateDateColumn()
   createdAt: Date;

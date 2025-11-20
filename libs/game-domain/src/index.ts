@@ -12,4 +12,5 @@ export * from './enums/class-name.enum';
 // Seed
 export * from './seed/seed-game';
 
-// Migration
+// Dto
+export * from './dtos/character.dto';

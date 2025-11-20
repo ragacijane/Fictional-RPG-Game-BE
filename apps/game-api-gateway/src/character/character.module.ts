@@ -11,7 +11,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'CHARACTER_CLIENT',
         transport: Transport.TCP,
         options: {
-          host: 'character',
+          // host: 'character',
           port: 3002,
         },
       },
