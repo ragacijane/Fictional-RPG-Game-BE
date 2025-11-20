@@ -10,6 +10,21 @@
   "monorepo": true,
   "root": "apps/game-api-gateway",
   "projects": {
+    "game-domain": {
+      "type": "library",
+      "root": "libs/game-domain",
+      "entryFile": "index",
+      "sourceRoot": "libs/game-domain/src"
+    },
+    "game-api-gateway": {
+      "type": "application",
+      "root": "apps/game-api-gateway",
+      "entryFile": "main",
+      "sourceRoot": "apps/game-api-gateway/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/game-api-gateway/tsconfig.app.json"
+      }
+    },
     "account": {
       "type": "application",
       "root": "apps/account",
@@ -19,13 +34,22 @@
         "tsConfigPath": "apps/account/tsconfig.app.json"
       }
     },
-    "game-api-gateway": {
+    "character": {
       "type": "application",
-      "root": "apps/game-api-gateway",
+      "root": "apps/character",
       "entryFile": "main",
-      "sourceRoot": "apps/game-api-gateway/src",
+      "sourceRoot": "apps/character/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/game-api-gateway/tsconfig.app.json"
+        "tsConfigPath": "apps/character/tsconfig.app.json"
+      }
+    },
+    "combat": {
+      "type": "application",
+      "root": "apps/combat",
+      "entryFile": "main",
+      "sourceRoot": "apps/combat/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/combat/tsconfig.app.json"
       }
     }
   }

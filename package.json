@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build game-api-gateway && nest build account",
+    "build": "nest build game-api-gateway && nest build account && nest build character && nest build combat",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -18,10 +18,17 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/rpg-game/test/jest-e2e.json",
-    "migration:generate:account": "typeorm-ts-node-commonjs migration:generate apps/account/src/migrations/InitAccount -d apps/account/typeorm.config.ts",
-    "migration:run:account": "typeorm-ts-node-commonjs migration:run -d apps/account/typeorm.config.ts",
-    "migration:revert:account": "typeorm-ts-node-commonjs migration:revert -d apps/account/typeorm.config.ts",
-    "seed:account": "ts-node apps/account/src/seed.ts"
+    "migration:generate:account": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate apps/account/src/migrations/InitAccount -d apps/account/typeorm.config.ts",
+    "migration:run:account": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d apps/account/typeorm.config.ts",
+    "migration:revert:account": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d apps/account/typeorm.config.ts",
+    "seed:account": "node -r ts-node/register -r tsconfig-paths/register apps/account/src/seed.ts",
+    "migration:generate:character": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate libs/game-domain/src/migrations/InitCharacter -d apps/character/typeorm.config.ts",
+    "migration:run:character": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d apps/character/typeorm.config.ts",
+    "migration:run:combat": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d apps/combat/typeorm.config.ts",
+    "migration:revert:character": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d apps/character/typeorm.config.ts",
+    "migration:revert:combat": "node -r ts-node/register -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d apps/combat/typeorm.config.ts",
+    "seed:character": "node -r ts-node/register -r tsconfig-paths/register apps/character/src/seed.ts",
+    "seed:combat": "node -r ts-node/register -r tsconfig-paths/register apps/combat/src/seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

@@ -1,6 +1,6 @@
+import { Account } from '@game-domain';
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { Account } from './src/entities/account.entity';
 
 // TODO: Put in ENV
 

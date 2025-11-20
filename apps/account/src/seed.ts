@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import AccountDataSource from '../typeorm.config';
-import { Account } from './entities/account.entity';
+import { Account, AccountRole } from '@game-domain';
 
 async function seed() {
   await AccountDataSource.initialize();
@@ -15,9 +15,10 @@ async function seed() {
   }
 
   const acc1 = repository.create({
-    email: 'luka1@test.com',
+    email: 'admin@game.com',
     passwordHash: 'test-password-1',
-    username: 'lukaTest1',
+    username: 'admin',
+    role: AccountRole.GAME_MASTER,
   });
 
   const acc2 = repository.create({

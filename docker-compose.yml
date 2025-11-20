@@ -11,11 +11,16 @@ services:
     depends_on:
       - account
       - account-db
+      - character
+      - character-db
+      - combat
+      - combat-db
 
   account:
     build:
       context: .
       target: account
+    container_name: account-service
     expose:
       - '3001'
     depends_on:
@@ -38,7 +43,69 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - account_pgdata:/var/lib/postgresql/data
+
+  character:
+    build:
+      context: .
+      target: character
+    container_name: character-service
+    expose:
+      - '3002'
+    depends_on:
+      - character-db
+    environment:
+      - DB_HOST=character-db
+      - DB_PORT=5433
+      - DB_USER=character
+      - DB_PASSWORD=character
+      - DB_NAME=character_db
+
+  character-db:
+    image: postgres:16-alpine
+    container_name: character-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=character
+      - POSTGRES_PASSWORD=character
+      - POSTGRES_DB=character_db
+    command: ['postgres', '-p', '5433']
+    ports:
+      - '5433:5433'
+    volumes:
+      - character_pgdata:/var/lib/postgresql/data
+
+  combat:
+    build:
+      context: .
+      target: combat
+    container_name: combat-service
+    expose:
+      - '3003'
+    depends_on:
+      - combat-db
+    environment:
+      - DB_HOST=combat-db
+      - DB_PORT=5434
+      - DB_USER=combat
+      - DB_PASSWORD=combat
+      - DB_NAME=combat_db
+
+  combat-db:
+    image: postgres:16-alpine
+    container_name: combat-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=combat
+      - POSTGRES_PASSWORD=combat
+      - POSTGRES_DB=combat_db
+    command: ['postgres', '-p', '5434']
+    ports:
+      - '5434:5434'
+    volumes:
+      - combat_pgdata:/var/lib/postgresql/data
 
 volumes:
-  pgdata:
+  account_pgdata:
+  character_pgdata:
+  combat_pgdata:

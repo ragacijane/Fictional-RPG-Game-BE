@@ -9,7 +9,7 @@ COPY nest-cli.json ./
 RUN npm install
 
 COPY apps ./apps
-#COPY libs ./libs
+COPY libs ./libs
 
 RUN npm run build
 
@@ -34,3 +34,25 @@ COPY --from=builder /usr/src/app ./
 EXPOSE 3001
 
 CMD ["sh", "-c", "npm run migration:run:account && npm run seed:account && node dist/apps/account/main.js"]
+
+# Runtime for character microservice
+FROM node:20-alpine AS character
+
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app ./
+
+EXPOSE 3002
+
+CMD ["sh", "-c", "npm run migration:run:character && npm run seed:character && node dist/apps/character/main.js"]
+
+# Runtime for combat microservice
+FROM node:20-alpine AS combat
+
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app ./
+
+EXPOSE 3003
+
+CMD ["sh", "-c", "npm run migration:run:combat && npm run seed:combat && node dist/apps/combat/main.js"]

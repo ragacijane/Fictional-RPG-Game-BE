@@ -1,12 +1,13 @@
 import { Controller, Get } from '@nestjs/common';
 import { CharacterService } from './character.service';
+import { MessagePattern } from '@nestjs/microservices';
 
 @Controller()
 export class CharacterController {
   constructor(private readonly characterService: CharacterService) {}
 
-  @Get()
-  getHello(): string {
-    return this.characterService.getHello();
+  @MessagePattern('character.findAll')
+  async findAll() {
+    return this.characterService.findAll();
   }
 }
