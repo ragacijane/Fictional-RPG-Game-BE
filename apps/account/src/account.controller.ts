@@ -6,7 +6,7 @@ import { MessagePattern } from '@nestjs/microservices';
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
-  @MessagePattern('account.findaAll')
+  @MessagePattern('account.findAll')
   findAll() {
     return this.accountService.findAll();
   }
