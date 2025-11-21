@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { CombatController } from './combat.controller';
 import { CombatService } from './combat.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Character, CharacterItem, Class, Item } from '@game-domain';
+import { Character, CharacterItem, Class, Duel, Item } from '@game-domain';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { Character, CharacterItem, Class, Item } from '@game-domain';
       synchronize: false,
     }),
     // Repository
-    TypeOrmModule.forFeature([Character, Item, Class, CharacterItem]),
+    TypeOrmModule.forFeature([Character, Item, Class, CharacterItem, Duel]),
   ],
   controllers: [CombatController],
   providers: [CombatService],

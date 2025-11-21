@@ -10,7 +10,7 @@ const CharacterDataSource = new DataSource({
   password: 'character',
   database: 'character_db',
   entities: [Character, Class, Item, CharacterItem],
-  migrations: ['libs/game-domain/src/migrations/*{.ts,.js}'],
+  migrations: ['apps/character/src/migrations/*{.ts,.js}'],
   synchronize: false,
 });
 

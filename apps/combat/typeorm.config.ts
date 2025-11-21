@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { Character, Class, Item, CharacterItem } from '@game-domain';
+import { Character, Class, Item, CharacterItem, Duel } from '@game-domain';
 
 const CombatDataSource = new DataSource({
   type: 'postgres',
@@ -9,8 +9,8 @@ const CombatDataSource = new DataSource({
   username: 'combat',
   password: 'combat',
   database: 'combat_db',
-  entities: [Character, Class, Item, CharacterItem],
-  migrations: ['libs/game-domain/src/migrations/*{.ts,.js}'],
+  entities: [Character, Class, Item, CharacterItem, Duel],
+  migrations: ['apps/combat/src/migrations/*{.ts,.js}'],
   synchronize: false,
 });
 

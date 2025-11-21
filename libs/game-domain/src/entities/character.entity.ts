@@ -54,10 +54,6 @@ export class Character {
   @OneToMany(() => CharacterItem, (ci) => ci.character, { eager: true })
   items: CharacterItem[];
 
-  @ManyToOne(() => Account, { eager: true })
-  @JoinColumn({ name: 'ownerId' })
-  owner: Account;
-
   @Column()
   ownerId: string;
 

@@ -17,6 +17,9 @@ export async function seedGameDomain(dataSource: DataSource) {
     return;
   }
 
+  const ownerId = '511acdbd-97e8-4b91-bebc-0504ba03f56d';
+
+  // CLASSES
   const warrior = classRepo.create({
     name: ClassName.WARRIOR,
     description: 'Frontline fighter with high strength.',
@@ -29,18 +32,55 @@ export async function seedGameDomain(dataSource: DataSource) {
 
   await classRepo.save([warrior, mage]);
 
-  const sword = itemRepo.create({
-    name: 'Steel Sword',
-    description: 'A basic steel sword.',
-    bonusStrength: 5,
-    bonusAgility: 1,
-    bonusIntelligence: 0,
-    bonusFaith: 0,
-  });
+  // ITEMS
+  const itemsData = [
+    {
+      name: 'Steel Sword',
+      description: 'A basic steel sword.',
+      bonusStrength: 5,
+      bonusAgility: 1,
+      bonusIntelligence: 0,
+      bonusFaith: 0,
+    },
+    {
+      name: 'Iron Shield',
+      description: 'A reliable shield forged from iron.',
+      bonusStrength: 2,
+      bonusAgility: 0,
+      bonusIntelligence: 0,
+      bonusFaith: 1,
+    },
+    {
+      name: 'Magic Wand',
+      description: 'Enhances magical abilities.',
+      bonusStrength: 0,
+      bonusAgility: 0,
+      bonusIntelligence: 5,
+      bonusFaith: 2,
+    },
+    {
+      name: 'Leather Boots',
+      description: 'Light boots that increase agility.',
+      bonusStrength: 0,
+      bonusAgility: 3,
+      bonusIntelligence: 0,
+      bonusFaith: 0,
+    },
+    {
+      name: 'Holy Amulet',
+      description: 'Amulet blessed with holy power.',
+      bonusStrength: 0,
+      bonusAgility: 0,
+      bonusIntelligence: 1,
+      bonusFaith: 4,
+    },
+  ];
 
-  await itemRepo.save(sword);
+  const items = itemRepo.create(itemsData);
+  await itemRepo.save(items);
 
-  const hero = characterRepo.create({
+  // CHARACTERS
+  const hero1 = characterRepo.create({
     name: 'HeroOne',
     health: 100,
     mana: 50,
@@ -48,23 +88,37 @@ export async function seedGameDomain(dataSource: DataSource) {
     baseAgility: 5,
     baseIntelligence: 3,
     baseFaith: 2,
+    ownerId,
+    classId: warrior.id,
   });
 
-  hero['classId'] = warrior.id;
-
-  await characterRepo.save(hero);
-
-  const ci1 = charItemRepo.create({
-    characterId: hero.id,
-    itemId: sword.id,
+  const hero2 = characterRepo.create({
+    name: 'MageMaster',
+    health: 80,
+    mana: 120,
+    baseStrength: 3,
+    baseAgility: 4,
+    baseIntelligence: 12,
+    baseFaith: 5,
+    ownerId,
+    classId: mage.id,
   });
 
-  const ci2 = charItemRepo.create({
-    characterId: hero.id,
-    itemId: sword.id,
-  });
+  await characterRepo.save([hero1, hero2]);
 
-  await charItemRepo.save([ci1, ci2]);
+  // CHARACTER ITEMS
+  const hero1Items = [
+    charItemRepo.create({ characterId: hero1.id, itemId: items[0].id }),
+    charItemRepo.create({ characterId: hero1.id, itemId: items[1].id }),
+  ];
+
+  const hero2Items = [
+    charItemRepo.create({ characterId: hero2.id, itemId: items[2].id }),
+    charItemRepo.create({ characterId: hero2.id, itemId: items[3].id }),
+    charItemRepo.create({ characterId: hero2.id, itemId: items[4].id }),
+  ];
+
+  await charItemRepo.save([...hero1Items, ...hero2Items]);
 
   console.log(`${dataSource.options.database} seeded successfully.`);
   await dataSource.destroy();
