@@ -1,45 +1,73 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { CharacterService } from './character.service';
-import { CreateCharacterDto, FindOneCharacterDto } from '@game-domain';
+import {
+  AccountRole,
+  CreateCharacterBody,
+  CreateCharacterDto,
+  FindOneCharacterDto,
+} from '@game-domain';
 import {
   CreateItemDto,
   FindOneItemDto,
   GiftItemsDto,
   GrantItemsDto,
 } from 'libs/game-domain/src/dtos/item.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@Controller('')
+// TODO: Implement Error Handlers and api responses
+@UseGuards(JwtAuthGuard)
+@Controller()
 export class CharacterController {
   constructor(private characterService: CharacterService) {}
 
   @Get('character')
-  findAllcharacters() {
+  findAllcharacters(@Req() req) {
+    if (req.user.role != AccountRole.GAME_MASTER) {
+      return 'Only GameMaster can call this EP.';
+    }
     return this.characterService.findAllCharacters();
   }
 
   @Get('character/:id')
-  findOneCharacter(@Param('id') id: string) {
+  findOneCharacter(@Req() req, @Param('id') id: string) {
     const dto: FindOneCharacterDto = {
-      accountId: 'testAcc',
+      accountId: req.user.accountId,
       characterId: id,
+      isGameMaster: req.user.role == AccountRole.GAME_MASTER,
     };
     return this.characterService.findOneCharacter(dto);
   }
 
   @Post('character')
-  createCharacter(@Body() body: CreateCharacterDto) {
-    return this.characterService.createCharacter(body);
+  createCharacter(@Req() req, @Body() body: CreateCharacterBody) {
+    console.log('userId', req.user.id);
+    const dto: CreateCharacterDto = {
+      ...body,
+      ownerId: req.user.accountId,
+    };
+    return this.characterService.createCharacter(dto);
   }
 
   @Get('items')
-  findAllItems() {
+  findAllItems(@Req() req) {
+    if (req.user.role != AccountRole.GAME_MASTER) {
+      return 'Only GameMaster can call this EP.';
+    }
     return this.characterService.findAllItems();
   }
 
   @Get('items/:id')
-  findOneItem(@Param('id') id: string) {
+  findOneItem(@Req() req, @Param('id') id: string) {
     const dto: FindOneItemDto = {
-      accountId: 'testAcc',
+      accountId: req.user.accountId,
       itemId: id,
     };
     return this.characterService.findOneItem(dto);
@@ -51,8 +79,12 @@ export class CharacterController {
   }
 
   @Post('items/grant')
-  grantItems(@Body() body: GrantItemsDto) {}
+  grantItems(@Body() body: GrantItemsDto) {
+    return this.characterService.grantItem(body);
+  }
 
   @Post('items/gift')
-  giftItems(@Body() body: GiftItemsDto) {}
+  giftItems(@Body() body: GiftItemsDto) {
+    return this.characterService.giftItem(body);
+  }
 }

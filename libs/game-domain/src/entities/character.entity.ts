@@ -3,17 +3,13 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Class } from './class.entity';
-import { Item } from './item.entity';
 import { CharacterItem } from './character-item.entity';
-import { Account } from './account.entity';
 
 @Entity('characters')
 export class Character {

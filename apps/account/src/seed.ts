@@ -17,14 +17,14 @@ async function seed() {
   const acc1 = repository.create({
     id: '511acdbd-97e8-4b91-bebc-0504ba03f56d',
     email: 'admin@game.com',
-    passwordHash: 'test-password-1',
+    password: 'test-password-1',
     username: 'admin',
     role: AccountRole.GAME_MASTER,
   });
 
   const acc2 = repository.create({
     email: 'luka2@test.com',
-    passwordHash: 'test-password-2',
+    password: 'test-password-2',
     username: 'lukaTest2',
   });
 

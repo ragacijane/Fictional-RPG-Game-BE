@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccountController } from './account.controller';
 import { AccountService } from './account.service';
 import { Account } from '@game-domain';
+import { JwtModule } from '@nestjs/jwt';
 
 //TODO: Put in env
 @Module({
@@ -17,8 +18,11 @@ import { Account } from '@game-domain';
       autoLoadEntities: true,
       synchronize: false,
     }),
-    // Repository
     TypeOrmModule.forFeature([Account]),
+    JwtModule.register({
+      secret: 'JWT-SECRET',
+      signOptions: { expiresIn: '10h' },
+    }),
   ],
   controllers: [AccountController],
   providers: [AccountService],

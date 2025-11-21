@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { CombatService } from './combat.service';
 import { CombatAction, CreateDuelDto, DuelActionDto } from '@game-domain';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller()
 export class CombatController {
   constructor(private combatService: CombatService) {}

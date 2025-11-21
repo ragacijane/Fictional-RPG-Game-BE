@@ -48,6 +48,9 @@ export class Duel {
   @Column({ type: 'timestamptz', nullable: true })
   lastHealCharacterTwoAt: Date | null;
 
+  @Column({ type: 'timestamptz', nullable: false })
+  maxDuelDuration: Date | null;
+
   @CreateDateColumn()
   createdAt: Date;
 

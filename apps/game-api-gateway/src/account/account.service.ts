@@ -1,3 +1,4 @@
+import { LoginDto, RegisterDto } from '@game-domain';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 
@@ -7,7 +8,12 @@ export class AccountService {
     @Inject('ACCOUNT_CLIENT')
     private readonly accountClient: ClientProxy,
   ) {}
-  findAll() {
-    return this.accountClient.send('account.findAll', {});
+
+  login(dto: LoginDto) {
+    return this.accountClient.send('account.login', dto);
+  }
+
+  register(dto: RegisterDto) {
+    return this.accountClient.send('account.register', dto);
   }
 }

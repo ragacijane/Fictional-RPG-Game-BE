@@ -23,7 +23,7 @@ export class CharacterItem {
   @Column({ type: 'int', default: 1 })
   quantity: number;
 
-  @ManyToOne(() => Character, (c) => c.items, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Character, (c) => c.items)
   @JoinColumn({ name: 'characterId' })
   character: Character;
 
@@ -33,4 +33,15 @@ export class CharacterItem {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @CreateDateColumn()
+  updatedAt: Date;
+
+  public incQuantity() {
+    this.quantity += 1;
+  }
+
+  public decQuantity() {
+    this.quantity -= 1;
+  }
 }

@@ -11,10 +11,8 @@ export * from './enums/account-role.enum';
 export * from './enums/class-name.enum';
 export * from './enums/combat-action.enum';
 
-// Seed
-export * from './seed/seed-game';
-
 // Dto
+export * from './dtos/account.dto';
 export * from './dtos/character.dto';
 export * from './dtos/item.dto';
 export * from './dtos/combat.dto';

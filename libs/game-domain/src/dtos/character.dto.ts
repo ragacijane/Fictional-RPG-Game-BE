@@ -1,9 +1,10 @@
 export type FindOneCharacterDto = {
   accountId: string;
   characterId: string;
+  isGameMaster: boolean;
 };
 
-export type CreateCharacterDto = {
+export type CreateCharacterBody = {
   name: string;
   health: number;
   mana: number;
@@ -12,4 +13,8 @@ export type CreateCharacterDto = {
   baseIntelligence: number;
   baseFaith: number;
   classId: string;
+};
+
+export type CreateCharacterDto = CreateCharacterBody & {
+  ownerId: string;
 };

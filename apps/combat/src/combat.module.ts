@@ -3,6 +3,7 @@ import { CombatController } from './combat.controller';
 import { CombatService } from './combat.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Character, CharacterItem, Class, Duel, Item } from '@game-domain';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
@@ -18,6 +19,16 @@ import { Character, CharacterItem, Class, Duel, Item } from '@game-domain';
     }),
     // Repository
     TypeOrmModule.forFeature([Character, Item, Class, CharacterItem, Duel]),
+    ClientsModule.register([
+      {
+        name: 'CHARACTER_CLIENT',
+        transport: Transport.TCP,
+        options: {
+          // host: 'character',
+          port: 3002,
+        },
+      },
+    ]),
   ],
   controllers: [CombatController],
   providers: [CombatService],

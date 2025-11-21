@@ -55,4 +55,4 @@ COPY --from=builder /usr/src/app ./
 
 EXPOSE 3003
 
-CMD ["sh", "-c", "npm run migration:run:combat && npm run seed:combat && node dist/apps/combat/main.js"]
+CMD ["sh", "-c", "npm run migration:run:combat && node dist/apps/combat/main.js"]
