@@ -5,7 +5,8 @@ import {
   FindOneCharacterDto,
   Item,
 } from '@game-domain';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateItemDto,
@@ -31,7 +32,7 @@ export class CharacterService {
     const characters = await this.characterRepository.find();
 
     if (!characters) {
-      return 'Characters not found.';
+      throw new RpcException(new NotFoundException(`Characters not found.`));
     }
 
     console.log('Successfully retrieved all characters.');
@@ -42,6 +43,7 @@ export class CharacterService {
     console.log(
       `Looking for character ${dto.characterId} for account ${dto.accountId}`,
     );
+
     const where: Record<string, any>[] = [];
     where.push({ id: dto.characterId });
     if (!dto.isGameMaster) {
@@ -51,9 +53,14 @@ export class CharacterService {
       where,
     });
     if (!character) {
-      return 'Character not found.';
+      console.log(`Character with id ${dto.characterId} not found.`);
+      throw new RpcException(
+        new NotFoundException(
+          `Character with id ${dto.characterId} not found.`,
+        ),
+      );
     }
-    console.log(`Successfully retrievec character ${dto.characterId}`);
+    console.log(`Successfully retrieved character ${dto.characterId}`);
     return character;
   }
 
@@ -69,7 +76,7 @@ export class CharacterService {
     console.log('Retrieving all items');
     const items = await this.itemRepository.find();
     if (!items) {
-      return 'Items not found';
+      throw new RpcException(new NotFoundException('Items not found'));
     }
     console.log('Successfully retrieved all items.');
     return items;
@@ -81,10 +88,11 @@ export class CharacterService {
       where: { id: dto.itemId },
     });
     if (!item) {
-      return 'Item not found.';
+      throw new RpcException(
+        new NotFoundException(`Item with id ${dto.itemId} not found.`),
+      );
     }
     console.log(`Successfully retrieved item ${dto.itemId}`);
-
     return item;
   }
 
@@ -102,14 +110,20 @@ export class CharacterService {
       where: { id: dto.characterId },
     });
     if (!character) {
-      return 'Character not found.';
+      throw new RpcException(
+        new NotFoundException(
+          `Character with id ${dto.characterId} not found.`,
+        ),
+      );
     }
     const item = this.itemRepository.findOne({
       where: { id: dto.itemId },
     });
 
     if (!item) {
-      return 'Item not found.';
+      throw new RpcException(
+        new NotFoundException(`Item with id ${dto.itemId} not found.`),
+      );
     }
 
     let charItem = await this.characterItemRepository.findOne({
@@ -146,14 +160,22 @@ export class CharacterService {
       where: { id: dto.senderCharacterId },
     });
     if (!senderCharacter) {
-      return 'Sender character not found.';
+      throw new RpcException(
+        new NotFoundException(
+          `Sender Character with id ${dto.senderCharacterId} not found.`,
+        ),
+      );
     }
 
     const recieverCharacter = this.characterRepository.findOne({
       where: { id: dto.recieverCharacterId },
     });
     if (!recieverCharacter) {
-      return 'Reciever character not found.';
+      throw new RpcException(
+        new NotFoundException(
+          `Reciever Character with id ${dto.recieverCharacterId} not found.`,
+        ),
+      );
     }
 
     const item = this.itemRepository.findOne({
@@ -161,10 +183,12 @@ export class CharacterService {
     });
 
     if (!item) {
-      return 'Item not found.';
+      throw new RpcException(
+        new NotFoundException(`Item with id ${dto.itemId} not found.`),
+      );
     }
 
-    // sender logic
+    // Sender logic
     let senderCharItem = await this.characterItemRepository.findOne({
       where: {
         character: { id: dto.senderCharacterId },
@@ -174,7 +198,9 @@ export class CharacterService {
     });
 
     if (!senderCharItem) {
-      return 'Item doesnt exists for sender character.';
+      throw new RpcException(
+        new NotFoundException('Item doesnt exists for sender character.'),
+      );
     }
     senderCharItem.decQuantity();
 
@@ -184,7 +210,7 @@ export class CharacterService {
       await this.characterItemRepository.save(senderCharItem);
     }
 
-    // reciever logic
+    // Reciever logic
     let recievedCharItem = await this.characterItemRepository.findOne({
       where: {
         character: { id: dto.recieverCharacterId },
@@ -207,6 +233,6 @@ export class CharacterService {
     console.log(
       `Character ${dto.senderCharacterId} gifting item ${dto.itemId} to character ${dto.recieverCharacterId} SUCCESSFULLY`,
     );
-    return true;
+    return;
   }
 }

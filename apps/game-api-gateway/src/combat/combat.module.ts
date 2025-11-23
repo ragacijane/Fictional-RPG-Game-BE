@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { CombatService } from './combat.service';
 import { CombatController } from './combat.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { CharacterModule } from '../character/character.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         },
       },
     ]),
+    CharacterModule,
   ],
   providers: [CombatService],
   controllers: [CombatController],

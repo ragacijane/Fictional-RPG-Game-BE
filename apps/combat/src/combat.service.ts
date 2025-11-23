@@ -8,7 +8,7 @@ import {
   Item,
 } from '@game-domain';
 import { Inject, Injectable } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { firstValueFrom } from 'rxjs';
 import { Repository } from 'typeorm';
@@ -36,24 +36,39 @@ export class CombatService {
    * Notify character service that characters are in duel
    */
   async createDuel(dto: CreateDuelDto) {
-    const characterOne = await firstValueFrom(
-      this.characterClient.send('character.findOne', {
-        characterId: dto.characterOneId,
-        isGameMaster: true,
-        accountId: '',
-      }),
-    );
+    try {
+      const characterOne = await firstValueFrom(
+        this.characterClient.send('character.findOne', {
+          characterId: dto.characterOneId,
+          isGameMaster: true,
+          accountId: '',
+        }),
+      );
 
-    console.log(characterOne);
+      console.log(characterOne);
 
-    // const newDuel = this.duelRepository.create({
-    //   ...dto,
-    //   maxDuelDuration: new Date(Date.now() + 5 * 60 * 1000),
-    // });
+      // const newDuel = this.duelRepository.create({
+      //   ...dto,
+      //   maxDuelDuration: new Date(Date.now() + 5 * 60 * 1000),
+      // });
 
-    // await this.duelRepository.save(newDuel);
-    // return newDuel.id;
-    return true;
+      // await this.duelRepository.save(newDuel);
+      // return newDuel.id;
+      return true;
+    } catch (err: any) {
+      console.log('Error:', err);
+      if (err?.response && err?.status) {
+        throw new RpcException({
+          statusCode: err.response.statusCode ?? err.status,
+          message: err.response.message ?? err.message,
+        });
+      }
+
+      throw new RpcException({
+        statusCode: 500,
+        message: err?.message ?? 'Internal error in CombatService',
+      });
+    }
   }
 
   async duelAction(dto: DuelActionDto) {

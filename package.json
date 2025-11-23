@@ -31,6 +31,7 @@
     "seed:character": "node -r ts-node/register -r tsconfig-paths/register apps/character/src/seed.ts"
   },
   "dependencies": {
+    "@nestjs/cache-manager": "^3.0.1",
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.1",
@@ -38,6 +39,9 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/typeorm": "^11.0.0",
+    "cache-manager": "^7.2.5",
+    "cache-manager-ioredis-yet": "^2.1.2",
+    "ioredis": "^5.8.2",
     "jsonwebtoken": "^9.0.2",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
