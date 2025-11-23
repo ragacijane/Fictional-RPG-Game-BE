@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -17,12 +18,13 @@ import {
 import {
   CreateItemDto,
   FindOneItemDto,
+  GiftItemsBody,
   GiftItemsDto,
+  GrantItemBody,
   GrantItemsDto,
 } from 'libs/game-domain/src/dtos/item.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-// TODO: Implement Error Handlers and api responses
 @UseGuards(JwtAuthGuard)
 @Controller()
 export class CharacterController {
@@ -31,7 +33,7 @@ export class CharacterController {
   @Get('character')
   findAllcharacters(@Req() req) {
     if (req.user.role != AccountRole.GAME_MASTER) {
-      return 'Only GameMaster can call this EP.';
+      throw new BadRequestException('Only GameMaster can call this EP.');
     }
     return this.characterService.findAllCharacters();
   }
@@ -48,7 +50,6 @@ export class CharacterController {
 
   @Post('character')
   createCharacter(@Req() req, @Body() body: CreateCharacterBody) {
-    console.log('userId', req.user.id);
     const dto: CreateCharacterDto = {
       ...body,
       ownerId: req.user.accountId,
@@ -59,7 +60,7 @@ export class CharacterController {
   @Get('items')
   findAllItems(@Req() req) {
     if (req.user.role != AccountRole.GAME_MASTER) {
-      return 'Only GameMaster can call this EP.';
+      throw new BadRequestException('Only GameMaster can call this EP.');
     }
     return this.characterService.findAllItems();
   }
@@ -79,12 +80,20 @@ export class CharacterController {
   }
 
   @Post('items/grant')
-  grantItems(@Body() body: GrantItemsDto) {
-    return this.characterService.grantItem(body);
+  grantItems(@Req() req, @Body() body: GrantItemBody) {
+    const dto: GrantItemsDto = {
+      ...body,
+      accountId: req.user.accountId,
+    };
+    return this.characterService.grantItem(dto);
   }
 
   @Post('items/gift')
-  giftItems(@Body() body: GiftItemsDto) {
-    return this.characterService.giftItem(body);
+  giftItems(@Req() req, @Body() body: GiftItemsBody) {
+    const dto: GiftItemsDto = {
+      ...body,
+      accountId: req.user.accountId,
+    };
+    return this.characterService.giftItem(dto);
   }
 }

@@ -1,12 +1,18 @@
 import { Controller, Get } from '@nestjs/common';
 import { CharacterService } from './character.service';
 import { MessagePattern } from '@nestjs/microservices';
-import { CreateCharacterDto, FindOneCharacterDto } from '@game-domain';
+import {
+  CharacterReadType,
+  CreateCharacterDto,
+  AllCharactersListDto,
+  FindOneCharacterDto,
+} from '@game-domain';
 import {
   CreateItemDto,
   FindOneItemDto,
   GiftItemsDto,
   GrantItemsDto,
+  ItemReadType,
 } from 'libs/game-domain/src/dtos/item.dto';
 
 @Controller()
@@ -14,12 +20,12 @@ export class CharacterController {
   constructor(private readonly characterService: CharacterService) {}
 
   @MessagePattern('character.findAll')
-  async findAllCharacters() {
+  async findAllCharacters(): Promise<AllCharactersListDto[]> {
     return this.characterService.findAllCharacters();
   }
 
   @MessagePattern('character.findOne')
-  async findOneCharacter(dto: FindOneCharacterDto) {
+  async findOneCharacter(dto: FindOneCharacterDto): Promise<CharacterReadType> {
     return this.characterService.findeOneCharacter(dto);
   }
 
@@ -29,12 +35,12 @@ export class CharacterController {
   }
 
   @MessagePattern('items.findAll')
-  async findAllItems() {
+  async findAllItems(): Promise<ItemReadType[]> {
     return this.characterService.findAllItems();
   }
 
   @MessagePattern('items.findOne')
-  async findOneItem(dto: FindOneItemDto) {
+  async findOneItem(dto: FindOneItemDto): Promise<ItemReadType> {
     return this.characterService.findOneItem(dto);
   }
 

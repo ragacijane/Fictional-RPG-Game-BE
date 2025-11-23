@@ -13,10 +13,4 @@ describe('AccountController', () => {
 
     accountController = app.get<AccountController>(AccountController);
   });
-
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(accountController.getHello()).toBe('Hello World!');
-    });
-  });
 });

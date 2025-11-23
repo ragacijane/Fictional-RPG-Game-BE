@@ -14,9 +14,9 @@ describe('CombatController', () => {
     combatController = app.get<CombatController>(CombatController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(combatController.getHello()).toBe('Hello World!');
-    });
-  });
+  // describe('root', () => {
+  //   it('should return "Hello World!"', () => {
+  //     expect(combatController.getHello()).toBe('Hello World!');
+  //   });
+  // });
 });

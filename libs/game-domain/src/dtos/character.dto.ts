@@ -1,3 +1,5 @@
+import { ItemReadType } from './item.dto';
+
 export type FindOneCharacterDto = {
   accountId: string;
   characterId: string;
@@ -17,4 +19,25 @@ export type CreateCharacterBody = {
 
 export type CreateCharacterDto = CreateCharacterBody & {
   ownerId: string;
+};
+
+export type AllCharactersListDto = {
+  id: string;
+  name: string;
+  health: number;
+  mana: number;
+};
+
+export type CharacterReadType = {
+  id: string;
+  name: string;
+  health: number;
+  mana: number;
+  strength: number;
+  agility: number;
+  intelligence: number;
+  faith: number;
+  inCombat: boolean;
+  className: string;
+  items: ItemReadType[];
 };

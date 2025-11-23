@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ItemReadType } from '../dtos/item.dto';
 
 @Entity('items')
 export class Item {
@@ -34,4 +35,16 @@ export class Item {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  public getReadType(): ItemReadType {
+    return {
+      id: this.id,
+      name: this.name,
+      description: this.description,
+      bonusStrength: this.bonusStrength,
+      bonusAgility: this.bonusAgility,
+      bonusIntelligence: this.bonusIntelligence,
+      bonusFaith: this.bonusFaith,
+    };
+  }
 }

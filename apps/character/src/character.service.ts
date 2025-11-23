@@ -1,7 +1,9 @@
 import {
   Character,
   CharacterItem,
+  CharacterReadType,
   CreateCharacterDto,
+  AllCharactersListDto,
   FindOneCharacterDto,
   Item,
 } from '@game-domain';
@@ -13,6 +15,7 @@ import {
   FindOneItemDto,
   GiftItemsDto,
   GrantItemsDto,
+  ItemReadType,
 } from 'libs/game-domain/src/dtos/item.dto';
 import { Repository } from 'typeorm';
 
@@ -27,11 +30,19 @@ export class CharacterService {
     private readonly characterItemRepository: Repository<CharacterItem>,
   ) {}
 
-  async findAllCharacters() {
+  async findAllCharacters(): Promise<AllCharactersListDto[]> {
     console.log('Retrieving all characters');
-    const characters = await this.characterRepository.find();
+    const characters = await this.characterRepository
+      .createQueryBuilder('character')
+      .select([
+        'character.id AS id',
+        'character.name AS name',
+        'character.health AS health',
+        'character.mana AS mana',
+      ])
+      .getRawMany();
 
-    if (!characters) {
+    if (!characters || characters.length === 0) {
       throw new RpcException(new NotFoundException(`Characters not found.`));
     }
 
@@ -39,21 +50,24 @@ export class CharacterService {
     return characters;
   }
 
-  async findeOneCharacter(dto: FindOneCharacterDto) {
+  async findeOneCharacter(
+    dto: FindOneCharacterDto,
+  ): Promise<CharacterReadType> {
     console.log(
       `Looking for character ${dto.characterId} for account ${dto.accountId}`,
     );
 
-    const where: Record<string, any>[] = [];
-    where.push({ id: dto.characterId });
+    const where: Record<string, any> = {
+      id: dto.characterId,
+    };
+
     if (!dto.isGameMaster) {
-      where.push({ ownerId: dto.accountId });
+      where.ownerId = dto.accountId;
     }
     const character = await this.characterRepository.findOne({
       where,
     });
     if (!character) {
-      console.log(`Character with id ${dto.characterId} not found.`);
       throw new RpcException(
         new NotFoundException(
           `Character with id ${dto.characterId} not found.`,
@@ -61,7 +75,7 @@ export class CharacterService {
       );
     }
     console.log(`Successfully retrieved character ${dto.characterId}`);
-    return character;
+    return character.getReadType();
   }
 
   async createCharacter(dto: CreateCharacterDto) {
@@ -72,9 +86,20 @@ export class CharacterService {
     return newCharacter.id;
   }
 
-  async findAllItems() {
+  async findAllItems(): Promise<ItemReadType[]> {
     console.log('Retrieving all items');
-    const items = await this.itemRepository.find();
+    const items = await this.itemRepository
+      .createQueryBuilder('item')
+      .select([
+        'item.id AS id',
+        'item.name AS name',
+        'item.description AS description',
+        'item.bonusStrength AS bonusStrength',
+        'item.bonusAgility AS bonusAgility',
+        'item.bonusIntelligence AS bonusIntelligence',
+        'item.bonusFaith AS bonusFaith',
+      ])
+      .getRawMany();
     if (!items) {
       throw new RpcException(new NotFoundException('Items not found'));
     }
@@ -82,7 +107,7 @@ export class CharacterService {
     return items;
   }
 
-  async findOneItem(dto: FindOneItemDto) {
+  async findOneItem(dto: FindOneItemDto): Promise<ItemReadType> {
     console.log(`Looking for item ${dto.itemId} for account ${dto.accountId}`);
     const item = await this.itemRepository.findOne({
       where: { id: dto.itemId },
@@ -93,7 +118,11 @@ export class CharacterService {
       );
     }
     console.log(`Successfully retrieved item ${dto.itemId}`);
-    return item;
+    const suffix = this.determineItemSuffix(item);
+    return {
+      ...item.getReadType(),
+      name: suffix ? `${item.name} ${suffix}` : item.name,
+    };
   }
 
   async createItem(dto: CreateItemDto) {
@@ -107,7 +136,7 @@ export class CharacterService {
   async grantItem(dto: GrantItemsDto) {
     console.log(`Character ${dto.characterId} granting item ${dto.itemId}`);
     const character = this.characterRepository.findOne({
-      where: { id: dto.characterId },
+      where: { id: dto.characterId, ownerId: dto.accountId },
     });
     if (!character) {
       throw new RpcException(
@@ -157,7 +186,7 @@ export class CharacterService {
     );
 
     const senderCharacter = this.characterRepository.findOne({
-      where: { id: dto.senderCharacterId },
+      where: { id: dto.senderCharacterId, ownerId: dto.accountId },
     });
     if (!senderCharacter) {
       throw new RpcException(
@@ -234,5 +263,24 @@ export class CharacterService {
       `Character ${dto.senderCharacterId} gifting item ${dto.itemId} to character ${dto.recieverCharacterId} SUCCESSFULLY`,
     );
     return;
+  }
+
+  private determineItemSuffix(item: Item): string {
+    const bonuses = [
+      { stat: 'Strength', value: item.bonusStrength },
+      { stat: 'Agility', value: item.bonusAgility },
+      { stat: 'Intelligence', value: item.bonusIntelligence },
+      { stat: 'Faith', value: item.bonusFaith },
+    ];
+
+    const highest = bonuses.reduce((prev, curr) =>
+      curr.value > prev.value ? curr : prev,
+    );
+
+    if (highest.value <= 0) {
+      return '';
+    }
+
+    return `of ${highest.stat}`;
   }
 }

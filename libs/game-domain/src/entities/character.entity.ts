@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Class } from './class.entity';
 import { CharacterItem } from './character-item.entity';
+import { CharacterReadType } from '../dtos/character.dto';
 
 @Entity('characters')
 export class Character {
@@ -58,4 +59,33 @@ export class Character {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  public getReadType(): CharacterReadType {
+    let strength = this.baseStrength;
+    let agility = this.baseAgility;
+    let intelligence = this.baseIntelligence;
+    let faith = this.baseFaith;
+
+    const items = this.items.map((charItem) => {
+      strength += charItem.item.bonusStrength;
+      agility += charItem.item.bonusAgility;
+      intelligence += charItem.item.bonusIntelligence;
+      faith += charItem.item.bonusFaith;
+      return charItem.item.getReadType();
+    });
+
+    return {
+      id: this.id,
+      name: this.name,
+      health: this.health,
+      mana: this.mana,
+      strength,
+      agility,
+      intelligence,
+      faith,
+      inCombat: this.inCombat,
+      className: this.class.name,
+      items,
+    };
+  }
 }

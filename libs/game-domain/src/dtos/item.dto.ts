@@ -12,13 +12,31 @@ export type CreateItemDto = {
   bonusFaith: number;
 };
 
-export type GrantItemsDto = {
+export type GrantItemBody = {
   characterId: string;
   itemId: string;
 };
 
-export type GiftItemsDto = {
+export type GrantItemsDto = GrantItemBody & {
+  accountId: string;
+};
+
+export type GiftItemsBody = {
   senderCharacterId: string;
   recieverCharacterId: string;
   itemId: string;
+};
+
+export type GiftItemsDto = GiftItemsBody & {
+  accountId: string;
+};
+
+export type ItemReadType = {
+  id: string;
+  name: string;
+  description: string;
+  bonusStrength: number;
+  bonusAgility: number;
+  bonusIntelligence: number;
+  bonusFaith: number;
 };
