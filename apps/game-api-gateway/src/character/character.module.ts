@@ -1,39 +1,49 @@
 import { Module } from '@nestjs/common';
-import { CharacterService } from './character.service';
-import { CharacterController } from './character.controller';
+import { CharacterAPIService } from './character.service';
+import { CharacterAPIController } from './character.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AuthModule } from '../auth/auth.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-ioredis-yet';
-import { AccountModule } from '../account/account.module';
+import { CHARACTER_CLIENT } from '@game-domain';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
     AuthModule,
-    // TODO: Put into env/const
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
-        name: 'CHARACTER_CLIENT',
-        transport: Transport.TCP,
-        options: {
-          host: 'character',
-          port: 3002,
-        },
+        name: CHARACTER_CLIENT,
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: config.get<string>('CHARACTER_HOST'),
+            port: config.get<number>('CHARACTER_PORT'),
+          },
+        }),
       },
     ]),
     CacheModule.registerAsync({
       isGlobal: true,
-      useFactory: async () => ({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
         store: await redisStore({
-          host: 'redis', //process.env.REDIS_HOST ?? 'localhost', 'redis'
-          port: 6379, //Number(process.env.REDIS_PORT ?? 6379),
-          ttl: 60000, // default TTL
+          host: config.get<string>('REDIS_HOST'),
+          port: config.get<number>('REDIS_PORT'),
+          ttl: 60000,
         }),
       }),
     }),
   ],
-  providers: [CharacterService],
-  controllers: [CharacterController],
-  exports: [CharacterService],
+  providers: [CharacterAPIService],
+  controllers: [CharacterAPIController],
+  exports: [CharacterAPIService],
 })
-export class CharacterModule {}
+export class CharacterAPIModule {}

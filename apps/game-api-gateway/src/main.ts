@@ -8,6 +8,6 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalInterceptors(new ResponseInterceptor());
-  await app.listen(process.env.port ?? 3000);
+  await app.listen(process.env.GAME_API_PORT ?? 3000);
 }
 bootstrap();

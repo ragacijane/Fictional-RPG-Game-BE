@@ -4,23 +4,27 @@ import { AccountController } from './account.controller';
 import { AccountService } from './account.service';
 import { Account } from '@game-domain';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
 
-//TODO: Put in env
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: 5432,
-      username: 'account',
-      password: 'account',
-      database: 'account_db',
+      host: process.env.ACCOUNT_DB_HOST,
+      port: Number(process.env.ACCOUNT_DB_PORT),
+      username: process.env.ACCOUNT_DB_USER,
+      password: process.env.ACCOUNT_DB_PASS,
+      database: process.env.ACCOUNT_DB_NAME,
       autoLoadEntities: true,
       synchronize: false,
     }),
     TypeOrmModule.forFeature([Account]),
     JwtModule.register({
-      secret: 'JWT-SECRET',
+      secret: process.env.JWT_SECRET_KEY,
       signOptions: { expiresIn: '10h' },
     }),
   ],

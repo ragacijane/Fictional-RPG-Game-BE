@@ -1,22 +1,28 @@
 import { Module } from '@nestjs/common';
-import { AccountService } from './account.service';
-import { AccountController } from './account.controller';
+import { AccountAPIService } from './account.service';
+import { AccountAPIController } from './account.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ACCOUNT_CLIENT } from '@game-domain';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
-        name: 'ACCOUNT_CLIENT',
-        transport: Transport.TCP,
-        options: {
-          host: 'account',
-          port: 3001,
-        },
+        name: ACCOUNT_CLIENT,
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: config.get<string>('ACCOUNT_HOST'),
+            port: config.get<number>('ACCOUNT_PORT'),
+          },
+        }),
       },
     ]),
   ],
-  providers: [AccountService],
-  controllers: [AccountController],
+  providers: [AccountAPIService],
+  controllers: [AccountAPIController],
 })
-export class AccountModule {}
+export class AccountAPIModule {}

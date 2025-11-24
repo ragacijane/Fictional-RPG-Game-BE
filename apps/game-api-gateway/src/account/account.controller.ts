@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { AccountService } from './account.service';
+import { AccountAPIService } from './account.service';
 import { LoginDto, RegisterDto } from '@game-domain';
 
 @Controller()
-export class AccountController {
-  constructor(private accountService: AccountService) {}
+export class AccountAPIController {
+  constructor(private accountService: AccountAPIService) {}
 
   @Post('login')
   login(@Body() body: LoginDto) {

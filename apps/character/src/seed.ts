@@ -18,7 +18,7 @@ async function seed() {
     return;
   }
 
-  const ownerId = '511acdbd-97e8-4b91-bebc-0504ba03f56d';
+  const ownerId = process.env.GM_ID;
 
   // CLASSES
   const warrior = classRepo.create({

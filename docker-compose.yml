@@ -7,7 +7,7 @@ services:
       target: game-api-gateway
     container_name: game-api-gateway
     ports:
-      - '3000:3000'
+      - '${GAME_API_PORT}:${GAME_API_PORT}'
     depends_on:
       - account
       - account-db
@@ -16,6 +16,17 @@ services:
       - combat
       - combat-db
       - redis
+    environment:
+      - GAME_API_PORT=${GAME_API_PORT}
+      - ACCOUNT_HOST=${DOCKER_ACCOUNT_HOST}
+      - ACCOUNT_PORT=${ACCOUNT_PORT}
+      - CHARACTER_HOST=${DOCKER_CHARACTER_HOST}
+      - CHARACTER_PORT=${CHARACTER_PORT}
+      - COMBAT_HOST=${DOCKER_COMBAT_HOST}
+      - COMBAT_PORT=${COMBAT_PORT}
+      - REDIS_HOST=${DOCKER_REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
 
   account:
     build:
@@ -23,26 +34,33 @@ services:
       target: account
     container_name: account-service
     expose:
-      - '3001'
+      - '${ACCOUNT_PORT}'
     depends_on:
       - account-db
     environment:
-      - DB_HOST=account-db
-      - DB_PORT=5432
-      - DB_USER=account
-      - DB_PASSWORD=account
-      - DB_NAME=account_db
+      - ACCOUNT_DB_HOST=${DOCKER_ACCOUNT_DB_HOST}
+      - ACCOUNT_DB_PORT=${ACCOUNT_DB_PORT}
+      - ACCOUNT_DB_USER=${ACCOUNT_DB_USER}
+      - ACCOUNT_DB_PASS=${ACCOUNT_DB_PASS}
+      - ACCOUNT_DB_NAME=${ACCOUNT_DB_NAME}
+      - ACCOUNT_HOST=${DOCKER_ACCOUNT_HOST}
+      - ACCOUNT_PORT=${ACCOUNT_PORT}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - GM_USERNAME=${GM_USERNAME}
+      - GM_EMAIL=${GM_EMAIL}
+      - GM_PASS=${GM_PASS}
+      - GM_ID=${GM_ID}
 
   account-db:
     image: postgres:16-alpine
     container_name: account-db
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=account
-      - POSTGRES_PASSWORD=account
-      - POSTGRES_DB=account_db
+      - POSTGRES_USER='${ACCOUNT_DB_USER}'
+      - POSTGRES_PASSWORD='${ACCOUNT_DB_PASS}'
+      - POSTGRES_DB='${ACCOUNT_DB_NAME}'
     ports:
-      - '5432:5432'
+      - '${ACCOUNT_DB_PORT}:${ACCOUNT_DB_PORT}'
     volumes:
       - account_pgdata:/var/lib/postgresql/data
 
@@ -52,27 +70,30 @@ services:
       target: character
     container_name: character-service
     expose:
-      - '3002'
+      - '${CHARACTER_PORT}'
     depends_on:
       - character-db
     environment:
-      - DB_HOST=character-db
-      - DB_PORT=5433
-      - DB_USER=character
-      - DB_PASSWORD=character
-      - DB_NAME=character_db
+      - CHARACTER_DB_HOST=${DOCKER_CHARACTER_DB_HOST}
+      - CHARACTER_DB_PORT=${CHARACTER_DB_PORT}
+      - CHARACTER_DB_USER=${CHARACTER_DB_USER}
+      - CHARACTER_DB_PASS=${CHARACTER_DB_PASS}
+      - CHARACTER_DB_NAME=${CHARACTER_DB_NAME}
+      - CHARACTER_HOST=${DOCKER_CHARACTER_HOST}
+      - CHARACTER_PORT=${CHARACTER_PORT}
+      - GM_ID=${GM_ID}
 
   character-db:
     image: postgres:16-alpine
     container_name: character-db
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=character
-      - POSTGRES_PASSWORD=character
-      - POSTGRES_DB=character_db
-    command: ['postgres', '-p', '5433']
+      - POSTGRES_USER=${CHARACTER_DB_USER}
+      - POSTGRES_PASSWORD=${CHARACTER_DB_PASS}
+      - POSTGRES_DB=${CHARACTER_DB_NAME}
+    command: ['postgres', '-p', '${CHARACTER_DB_PORT}']
     ports:
-      - '5433:5433'
+      - '${CHARACTER_DB_PORT}:${CHARACTER_DB_PORT}'
     volumes:
       - character_pgdata:/var/lib/postgresql/data
 
@@ -82,27 +103,29 @@ services:
       target: combat
     container_name: combat-service
     expose:
-      - '3003'
+      - '${COMBAT_PORT}'
     depends_on:
       - combat-db
     environment:
-      - DB_HOST=combat-db
-      - DB_PORT=5434
-      - DB_USER=combat
-      - DB_PASSWORD=combat
-      - DB_NAME=combat_db
+      - COMBAT_DB_HOST=${DOCKER_COMBAT_DB_HOST}
+      - COMBAT_DB_PORT=${COMBAT_DB_PORT}
+      - COMBAT_DB_USER=${COMBAT_DB_USER}
+      - COMBAT_DB_PASS=${COMBAT_DB_PASS}
+      - COMBAT_DB_NAME=${COMBAT_DB_NAME}
+      - COMBAT_HOST=${DOCKER_COMBAT_HOST}
+      - COMBAT_PORT=${COMBAT_PORT}
 
   combat-db:
     image: postgres:16-alpine
     container_name: combat-db
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=combat
-      - POSTGRES_PASSWORD=combat
-      - POSTGRES_DB=combat_db
-    command: ['postgres', '-p', '5434']
+      - POSTGRES_USER='${COMBAT_DB_USER}'
+      - POSTGRES_PASSWORD='${COMBAT_DB_PASS}'
+      - POSTGRES_DB='${COMBAT_DB_NAME}'
+    command: ['postgres', '-p', '${COMBAT_DB_PORT}']
     ports:
-      - '5434:5434'
+      - '${COMBAT_DB_PORT}:${COMBAT_DB_PORT}'
     volumes:
       - combat_pgdata:/var/lib/postgresql/data
 
@@ -111,7 +134,7 @@ services:
     container_name: redis
     restart: always
     ports:
-      - '6379:6379'
+      - '${REDIS_PORT}:${REDIS_PORT}'
     command: >
       redis-server
       --appendonly yes

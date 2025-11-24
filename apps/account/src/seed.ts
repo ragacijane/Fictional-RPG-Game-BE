@@ -15,10 +15,10 @@ async function seed() {
   }
 
   const acc1 = repository.create({
-    id: '511acdbd-97e8-4b91-bebc-0504ba03f56d',
-    email: 'admin@game.com',
-    password: 'test-password-1',
-    username: 'admin',
+    id: process.env.GM_ID,
+    email: process.env.GM_EMAIL,
+    password: process.env.GM_PASS,
+    username: process.env.GM_USER,
     role: AccountRole.GAME_MASTER,
   });
 
@@ -30,7 +30,7 @@ async function seed() {
 
   await repository.save([acc1, acc2]);
 
-  console.log('Seed completed!');
+  console.log('Account DB seed completed!');
   await AccountDataSource.destroy();
 }
 

@@ -1,12 +1,12 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { CombatService } from './combat.service';
+import { CombatAPIService } from './combat.service';
 import { CombatAction, CreateDuelDto, DuelActionDto } from '@game-domain';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller()
-export class CombatController {
-  constructor(private combatService: CombatService) {}
+export class CombatAPIController {
+  constructor(private combatService: CombatAPIService) {}
   @Post('challange')
   createDuel(@Body() body: CreateDuelDto) {
     return this.combatService.createDuel(body);

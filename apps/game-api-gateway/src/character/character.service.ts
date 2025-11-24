@@ -3,6 +3,8 @@ import {
   CreateCharacterDto,
   AllCharactersListDto,
   FindOneCharacterDto,
+  CHARACTER_CLIENT,
+  CACHE_MANAGER,
 } from '@game-domain';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -17,11 +19,11 @@ import { Cache } from '@nestjs/cache-manager';
 import { validate as uuidValidate } from 'uuid';
 
 @Injectable()
-export class CharacterService {
+export class CharacterAPIService {
   constructor(
-    @Inject('CHARACTER_CLIENT')
+    @Inject(CHARACTER_CLIENT)
     private readonly characterClient: ClientProxy,
-    @Inject('CACHE_MANAGER')
+    @Inject(CACHE_MANAGER)
     private readonly cache: Cache,
   ) {}
 

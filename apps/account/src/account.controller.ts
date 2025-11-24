@@ -9,6 +9,7 @@ export class AccountController {
 
   @MessagePattern('account.login')
   login(dto: LoginDto) {
+    console.log('Logging In');
     return this.accountService.login(dto);
   }
 

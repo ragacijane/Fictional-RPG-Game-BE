@@ -1,14 +1,14 @@
-import { CreateDuelDto, DuelActionDto } from '@game-domain';
+import { COMBAT_CLIENT, CreateDuelDto, DuelActionDto } from '@game-domain';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { CharacterService } from '../character/character.service';
+import { CharacterAPIService } from '../character/character.service';
 
 @Injectable()
-export class CombatService {
+export class CombatAPIService {
   constructor(
-    @Inject('COMBAT_CLIENT')
+    @Inject(COMBAT_CLIENT)
     private readonly combatClient: ClientProxy,
-    private readonly characterService: CharacterService,
+    private readonly characterService: CharacterAPIService,
   ) {}
 
   async createDuel(dto: CreateDuelDto) {

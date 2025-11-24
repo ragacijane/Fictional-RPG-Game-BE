@@ -1,5 +1,6 @@
 import {
   Character,
+  CHARACTER_CLIENT,
   CharacterItem,
   Class,
   CreateDuelDto,
@@ -26,7 +27,7 @@ export class CombatService {
     private readonly classRepository: Repository<Class>,
     @InjectRepository(Duel)
     private readonly duelRepository: Repository<Duel>,
-    @Inject('CHARACTER_CLIENT')
+    @Inject(CHARACTER_CLIENT)
     private readonly characterClient: ClientProxy,
   ) {}
   // TODO:

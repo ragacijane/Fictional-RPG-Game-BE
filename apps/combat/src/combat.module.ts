@@ -2,30 +2,41 @@ import { Module } from '@nestjs/common';
 import { CombatController } from './combat.controller';
 import { CombatService } from './combat.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Character, CharacterItem, Class, Duel, Item } from '@game-domain';
+import {
+  Character,
+  CHARACTER_CLIENT,
+  CharacterItem,
+  Class,
+  Duel,
+  Item,
+} from '@game-domain';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: 5434,
-      username: 'combat',
-      password: 'combat',
-      database: 'combat_db',
+      host: process.env.COMBAT_DB_HOST,
+      port: Number(process.env.COMBAT_DB_PORT),
+      username: process.env.COMBAT_DB_USER,
+      password: process.env.COMBAT_DB_PASS,
+      database: process.env.COMBAT_DB_NAME,
       autoLoadEntities: true,
       synchronize: false,
     }),
-    // Repository
-    TypeOrmModule.forFeature([Character, Item, Class, CharacterItem, Duel]),
+    TypeOrmModule.forFeature([Character, Item, Class, CharacterItem, Duel]), // Repositories
     ClientsModule.register([
       {
-        name: 'CHARACTER_CLIENT',
+        name: CHARACTER_CLIENT,
         transport: Transport.TCP,
         options: {
-          // host: 'character',
-          port: 3002,
+          host: process.env.CHARACTER_HOST,
+          port: Number(process.env.CHARACTER_PORT),
         },
       },
     ]),

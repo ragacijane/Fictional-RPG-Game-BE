@@ -8,7 +8,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { CharacterService } from './character.service';
+import { CharacterAPIService } from './character.service';
 import {
   AccountRole,
   CreateCharacterBody,
@@ -27,8 +27,8 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller()
-export class CharacterController {
-  constructor(private characterService: CharacterService) {}
+export class CharacterAPIController {
+  constructor(private characterService: CharacterAPIService) {}
 
   @Get('character')
   findAllcharacters(@Req() req) {

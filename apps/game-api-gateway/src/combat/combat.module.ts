@@ -1,25 +1,34 @@
 import { Module } from '@nestjs/common';
-import { CombatService } from './combat.service';
-import { CombatController } from './combat.controller';
+import { CombatAPIService } from './combat.service';
+import { CombatAPIController } from './combat.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { CharacterModule } from '../character/character.module';
+import { CharacterAPIModule } from '../character/character.module';
+import { COMBAT_CLIENT } from '@game-domain';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    // TODO: Put into env/const
-    ClientsModule.register([
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    ClientsModule.registerAsync([
       {
-        name: 'COMBAT_CLIENT',
-        transport: Transport.TCP,
-        options: {
-          host: 'combat',
-          port: 3003,
-        },
+        name: COMBAT_CLIENT,
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: config.get<string>('COMBAT_HOST'),
+            port: config.get<number>('COMBAT_PORT'),
+          },
+        }),
       },
     ]),
-    CharacterModule,
+    CharacterAPIModule,
   ],
-  providers: [CombatService],
-  controllers: [CombatController],
+  providers: [CombatAPIService],
+  controllers: [CombatAPIController],
 })
-export class CombatModule {}
+export class CombatAPIModule {}
