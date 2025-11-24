@@ -46,7 +46,7 @@ services:
       - ACCOUNT_HOST=${DOCKER_ACCOUNT_HOST}
       - ACCOUNT_PORT=${ACCOUNT_PORT}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - GM_USERNAME=${GM_USERNAME}
+      - GM_USER=${GM_USER}
       - GM_EMAIL=${GM_EMAIL}
       - GM_PASS=${GM_PASS}
       - GM_ID=${GM_ID}

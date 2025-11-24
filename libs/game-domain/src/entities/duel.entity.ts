@@ -13,6 +13,7 @@ import { Character } from './character.entity';
 export class Duel {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
   // Character 1
 
   @ManyToOne(() => Character, { eager: true })

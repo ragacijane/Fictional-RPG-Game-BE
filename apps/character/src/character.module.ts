@@ -21,8 +21,7 @@ import { ConfigModule } from '@nestjs/config';
       autoLoadEntities: true,
       synchronize: false,
     }),
-    // Repository
-    TypeOrmModule.forFeature([Character, Item, Class, CharacterItem]),
+    TypeOrmModule.forFeature([Character, Item, Class, CharacterItem]), // Repository
   ],
   controllers: [CharacterController],
   providers: [CharacterService],

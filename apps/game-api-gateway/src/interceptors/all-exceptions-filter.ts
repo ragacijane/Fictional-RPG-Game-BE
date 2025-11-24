@@ -19,7 +19,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     console.error('Error:', exception);
 
-    // HTTP Exception (API Gateway local)
+    // HTTP Exception
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const res = exception.getResponse() as any;

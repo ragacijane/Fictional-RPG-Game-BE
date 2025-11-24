@@ -1,8 +1,10 @@
 import { Account, LoginDto, RegisterDto } from '@game-domain';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AccountService {
@@ -11,22 +13,19 @@ export class AccountService {
     private readonly accountRepository: Repository<Account>,
     private readonly jwtService: JwtService,
   ) {}
-  // TODO:
-  /**
-   * Implement Errors response
-   * Implement Password Hash
-   */
   async login(dto: LoginDto) {
     const account = await this.accountRepository.findOne({
       where: { username: dto.username },
     });
 
     if (!account) {
-      return 'Invalid Credentials';
+      throw new RpcException(new BadRequestException('Account doesnt exists.'));
     }
 
-    if (account.password != dto.password) {
-      return 'Invalid Credentials';
+    const passwordValid = await bcrypt.compare(dto.password, account.password);
+
+    if (!passwordValid) {
+      throw new RpcException(new BadRequestException('Invalid password.'));
     }
 
     const payload = {
@@ -45,10 +44,17 @@ export class AccountService {
     });
 
     if (existingAccount) {
-      return false;
+      throw new RpcException(
+        new BadRequestException(
+          'Account with that username/email already exists.',
+        ),
+      );
     }
-
-    const newAccount = this.accountRepository.create(dto);
+    const hashedPass = await bcrypt.hash(dto.password, 10);
+    const newAccount = this.accountRepository.create({
+      ...dto,
+      password: hashedPass,
+    });
     await this.accountRepository.save(newAccount);
     return true;
   }
