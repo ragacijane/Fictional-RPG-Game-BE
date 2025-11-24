@@ -16,7 +16,7 @@ import { AccountModule } from '../account/account.module';
         name: 'CHARACTER_CLIENT',
         transport: Transport.TCP,
         options: {
-          // host: 'character',
+          host: 'character',
           port: 3002,
         },
       },
@@ -25,7 +25,7 @@ import { AccountModule } from '../account/account.module';
       isGlobal: true,
       useFactory: async () => ({
         store: await redisStore({
-          host: 'localhost', //process.env.REDIS_HOST ?? 'localhost',
+          host: 'redis', //process.env.REDIS_HOST ?? 'localhost', 'redis'
           port: 6379, //Number(process.env.REDIS_PORT ?? 6379),
           ttl: 60000, // default TTL
         }),

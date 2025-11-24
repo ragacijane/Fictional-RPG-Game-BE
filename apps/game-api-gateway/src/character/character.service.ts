@@ -4,7 +4,7 @@ import {
   AllCharactersListDto,
   FindOneCharacterDto,
 } from '@game-domain';
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import {
   CreateItemDto,
@@ -14,6 +14,7 @@ import {
 } from 'libs/game-domain/src/dtos/item.dto';
 import { firstValueFrom } from 'rxjs';
 import { Cache } from '@nestjs/cache-manager';
+import { validate as uuidValidate } from 'uuid';
 
 @Injectable()
 export class CharacterService {
@@ -37,6 +38,10 @@ export class CharacterService {
 
   async findOneCharacter(dto: FindOneCharacterDto): Promise<CharacterReadType> {
     console.log('Following find character to Character service');
+
+    if (!uuidValidate(dto.characterId)) {
+      throw new BadRequestException(`Id is invalid ${dto.characterId}`);
+    }
 
     const cached = await this.cache.get<CharacterReadType>(dto.characterId);
 
@@ -82,6 +87,11 @@ export class CharacterService {
 
   async findOneItem(dto: FindOneItemDto) {
     console.log('Following find item to Character service');
+
+    if (!uuidValidate(dto.itemId)) {
+      throw new BadRequestException(`Id is invalid ${dto.itemId}`);
+    }
+
     try {
       return await firstValueFrom(
         this.characterClient.send('items.findOne', dto),
@@ -104,6 +114,12 @@ export class CharacterService {
 
   async grantItem(dto: GrantItemsDto) {
     console.log('Following grant item to Character service');
+    if (!uuidValidate(dto.characterId)) {
+      throw new BadRequestException(`Id is invalid ${dto.characterId}`);
+    }
+    if (!uuidValidate(dto.itemId)) {
+      throw new BadRequestException(`Id is invalid ${dto.itemId}`);
+    }
     try {
       await firstValueFrom(this.characterClient.send('items.grant', dto));
 
@@ -115,6 +131,15 @@ export class CharacterService {
 
   async giftItem(dto: GiftItemsDto) {
     console.log('Following gift item to Character service');
+    if (!uuidValidate(dto.senderCharacterId)) {
+      throw new BadRequestException(`Id is invalid ${dto.senderCharacterId}`);
+    }
+    if (!uuidValidate(dto.recieverCharacterId)) {
+      throw new BadRequestException(`Id is invalid ${dto.recieverCharacterId}`);
+    }
+    if (!uuidValidate(dto.itemId)) {
+      throw new BadRequestException(`Id is invalid ${dto.itemId}`);
+    }
     try {
       await firstValueFrom(this.characterClient.send('items.gift', dto));
 

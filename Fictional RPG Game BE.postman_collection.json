@@ -1,0 +1,348 @@
+{
+	"info": {
+		"_postman_id": "ffd8fa70-2c4d-4588-aba9-6f2b1538f7b2",
+		"name": "Fictional RPG Game BE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "32720148"
+	},
+	"item": [
+		{
+			"name": "Account",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"test-password-1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/api/login"
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Luka test 1\",\r\n    \"email\": \"test2@gmail.com\",\r\n    \"username\": \"luka\",\r\n    \"password\": \"test-password-3\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/api/register"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Character",
+			"item": [
+				{
+					"name": "Find All Characters",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{access_token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:3000/api/character"
+					},
+					"response": []
+				},
+				{
+					"name": "Find One Character",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{access_token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/character/:characterId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"character",
+								":characterId"
+							],
+							"variable": [
+								{
+									"key": "characterId",
+									"value": "7662b616-0b29-49c0-ad10-7d01c211ca3c"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find All Items",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{access_token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:3000/api/items"
+					},
+					"response": []
+				},
+				{
+					"name": "Find One Item",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{access_token}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/items/:itemId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"items",
+								":itemId"
+							],
+							"variable": [
+								{
+									"key": "itemId",
+									"value": "953357e9-9804-43aa-bf01-14c2306fb8f6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Character",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{access_token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Arthas\",\r\n  \"health\": 100,\r\n  \"mana\": 50,\r\n  \"baseStrength\": 10,\r\n  \"baseAgility\": 8,\r\n  \"baseIntelligence\": 6,\r\n  \"baseFaith\": 4,\r\n  \"classId\": \"690b83ce-4611-4d4c-bc8a-bfebbed2c854\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/api/character"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Item",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{access_token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Steel Tetris\",\r\n  \"description\": \"A basic steel tetris forged from tempered steel.\",\r\n  \"bonusStrength\": 5,\r\n  \"bonusAgility\": 1,\r\n  \"bonusIntelligence\": 0,\r\n  \"bonusFaith\": 7\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/api/items"
+					},
+					"response": []
+				},
+				{
+					"name": "Grant Item",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{access_token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"characterId\":\"7662b616-0b29-49c0-ad10-7d01c211ca3c\",\r\n    \"itemId\":\"953357e9-9804-43aa-bf01-14c2306fb8f6\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/api/items/grant"
+					},
+					"response": []
+				},
+				{
+					"name": "Gift Item",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MTFhY2RiZC05N2U4LTRiOTEtYmViYy0wNTA0YmEwM2Y1NmQiLCJyb2xlIjoiR2FtZU1hc3RlciIsImlhdCI6MTc2Mzc0NDEzMCwiZXhwIjoxNzYzNzgwMTMwfQ.XslPLD4aL7t6rKjUtQSOewY5rd4-VESIBLc7PssG0tk"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"senderCharacterId\":\"66e849fd-65ff-4200-8bc6-e91f38fd100d\",\r\n    \"recieverCharacterId\":\"189d62fc-368e-4d5e-bee1-71d3b70f5f3c\",\r\n    \"itemId\":\"2f6d8cda-234f-4df4-89b2-dbd56d5bb5e8\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/api/items/gift"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Combat",
+			"item": [
+				{
+					"name": "Challange",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{access_token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"characterOneId\": \"66e849fd-65ff-4200-8bc6-e91f38fd100d\",\r\n    \"characterTwoId\": \"189d62fc-368e-4d5e-bee1-71d3b70f5f3c\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3000/api/challange"
+					},
+					"response": []
+				},
+				{
+					"name": "Duel Action",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"characterId\":\"f67ae986-3539-45f2-bc6b-d4bbb324de64\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/:duelId/:action",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								":duelId",
+								":action"
+							],
+							"variable": [
+								{
+									"key": "duelId",
+									"value": "1e8109f0-c980-4bd0-8699-bcca45380b7b"
+								},
+								{
+									"key": "action",
+									"value": "cast"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "default"
+		}
+	]
+}

@@ -12,7 +12,7 @@ import { CharacterModule } from '../character/character.module';
         name: 'COMBAT_CLIENT',
         transport: Transport.TCP,
         options: {
-          // host: 'combat',
+          host: 'combat',
           port: 3003,
         },
       },

@@ -67,10 +67,10 @@ export class Character {
     let faith = this.baseFaith;
 
     const items = this.items.map((charItem) => {
-      strength += charItem.item.bonusStrength;
-      agility += charItem.item.bonusAgility;
-      intelligence += charItem.item.bonusIntelligence;
-      faith += charItem.item.bonusFaith;
+      strength += charItem.item.bonusStrength * charItem.quantity;
+      agility += charItem.item.bonusAgility * charItem.quantity;
+      intelligence += charItem.item.bonusIntelligence * charItem.quantity;
+      faith += charItem.item.bonusFaith * charItem.quantity;
       return charItem.item.getReadType();
     });
 
