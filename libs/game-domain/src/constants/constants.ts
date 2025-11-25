@@ -2,3 +2,7 @@ export const ACCOUNT_CLIENT = 'ACCOUNT_CLIENT';
 export const CHARACTER_CLIENT = 'CHARACTER_CLIENT';
 export const COMBAT_CLIENT = 'COMBAT_CLIENT';
 export const CACHE_MANAGER = 'CACHE_MANAGER';
+
+export const ATTACK_AVAILABILITY = 1;
+export const CAST_AVAILABILITY = 2;
+export const HEAL_AVAILABILITY = 2;

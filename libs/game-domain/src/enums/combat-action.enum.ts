@@ -3,3 +3,8 @@ export enum CombatAction {
   CAST = 'Cast',
   HEAL = 'Heal',
 }
+
+export enum DuelStatus {
+  ACTIVE = 'Active',
+  FINISHED = 'Finished',
+}

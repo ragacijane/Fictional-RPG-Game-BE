@@ -40,8 +40,4 @@ export class CharacterItem {
   public incQuantity() {
     this.quantity += 1;
   }
-
-  public decQuantity() {
-    this.quantity -= 1;
-  }
 }

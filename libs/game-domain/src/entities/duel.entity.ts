@@ -8,11 +8,28 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Character } from './character.entity';
+import { DuelStatus } from '../enums/combat-action.enum';
 
 @Entity('duels')
 export class Duel {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column({
+    type: 'enum',
+    enum: DuelStatus,
+    default: DuelStatus.ACTIVE,
+  })
+  status: DuelStatus;
+
+  @Column({ type: 'timestamptz', nullable: false })
+  maxDuelDuration: Date | null;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   // Character 1
 
@@ -48,13 +65,4 @@ export class Duel {
 
   @Column({ type: 'timestamptz', nullable: true })
   lastHealCharacterTwoAt: Date | null;
-
-  @Column({ type: 'timestamptz', nullable: false })
-  maxDuelDuration: Date | null;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
 }

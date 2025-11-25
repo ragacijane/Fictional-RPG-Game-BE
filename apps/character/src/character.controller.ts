@@ -26,12 +26,21 @@ export class CharacterController {
 
   @MessagePattern('character.findOne')
   async findOneCharacter(dto: FindOneCharacterDto): Promise<CharacterReadType> {
-    return this.characterService.findeOneCharacter(dto);
+    const character = (await this.characterService.findeOneCharacter(
+      dto,
+      false,
+    )) as CharacterReadType;
+    return character;
   }
 
   @MessagePattern('character.create')
   async createCharacter(dto: CreateCharacterDto) {
     return this.characterService.createCharacter(dto);
+  }
+
+  @MessagePattern('character.getRawCharacter')
+  async getRawCharacter(dto: FindOneCharacterDto) {
+    return this.characterService.findeOneCharacter(dto, true);
   }
 
   @MessagePattern('items.findAll')

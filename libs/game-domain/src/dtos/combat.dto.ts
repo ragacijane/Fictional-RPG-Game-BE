@@ -1,8 +1,12 @@
 import { CombatAction } from '../enums/combat-action.enum';
 
-export type CreateDuelDto = {
+export type CreateDuelBody = {
   characterOneId: string;
   characterTwoId: string;
+};
+
+export type CreateDuelDto = CreateDuelBody & {
+  accountId: string;
 };
 
 export type DuelActionDto = {

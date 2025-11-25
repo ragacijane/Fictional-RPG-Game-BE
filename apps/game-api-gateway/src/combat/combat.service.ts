@@ -1,7 +1,9 @@
 import { COMBAT_CLIENT, CreateDuelDto, DuelActionDto } from '@game-domain';
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { CharacterAPIService } from '../character/character.service';
+import { firstValueFrom } from 'rxjs';
+import { validate as uuidValidate } from 'uuid';
 
 @Injectable()
 export class CombatAPIService {
@@ -12,12 +14,30 @@ export class CombatAPIService {
   ) {}
 
   async createDuel(dto: CreateDuelDto) {
-    await this.characterService.invalidateCharacterCache(dto.characterOneId);
-
-    return this.combatClient.send('combat.create', dto);
+    if (!uuidValidate(dto.characterOneId)) {
+      throw new BadRequestException(`Id is invalid ${dto.characterOneId}`);
+    }
+    if (!uuidValidate(dto.characterTwoId)) {
+      throw new BadRequestException(`Id is invalid ${dto.characterTwoId}`);
+    }
+    try {
+      return await firstValueFrom(this.combatClient.send('combat.create', dto));
+    } catch (error) {
+      throw error;
+    }
   }
 
-  duelAction(dto: DuelActionDto) {
-    return this.combatClient.send('combat.action', dto);
+  async duelAction(dto: DuelActionDto) {
+    if (!uuidValidate(dto.characterId)) {
+      throw new BadRequestException(`Id is invalid ${dto.characterId}`);
+    }
+    if (!uuidValidate(dto.duelId)) {
+      throw new BadRequestException(`Id is invalid ${dto.duelId}`);
+    }
+    try {
+      return await firstValueFrom(this.combatClient.send('combat.action', dto));
+    } catch (error) {
+      throw error;
+    }
   }
 }

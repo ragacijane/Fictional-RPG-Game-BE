@@ -1,6 +1,19 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { CombatAPIService } from './combat.service';
-import { CombatAction, CreateDuelDto, DuelActionDto } from '@game-domain';
+import {
+  CombatAction,
+  CreateDuelBody,
+  CreateDuelDto,
+  DuelActionDto,
+} from '@game-domain';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
@@ -8,8 +21,12 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 export class CombatAPIController {
   constructor(private combatService: CombatAPIService) {}
   @Post('challange')
-  createDuel(@Body() body: CreateDuelDto) {
-    return this.combatService.createDuel(body);
+  createDuel(@Req() req, @Body() body: CreateDuelBody) {
+    const dto: CreateDuelDto = {
+      ...body,
+      accountId: req.user.accountId,
+    };
+    return this.combatService.createDuel(dto);
   }
 
   @Post(':duelId/:action')

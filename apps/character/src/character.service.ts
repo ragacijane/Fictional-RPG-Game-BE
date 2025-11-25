@@ -53,7 +53,8 @@ export class CharacterService {
 
   async findeOneCharacter(
     dto: FindOneCharacterDto,
-  ): Promise<CharacterReadType> {
+    isRaw: boolean,
+  ): Promise<CharacterReadType | Character> {
     console.log(
       `Looking for character ${dto.characterId} for account ${dto.accountId}`,
     );
@@ -76,7 +77,7 @@ export class CharacterService {
       );
     }
     console.log(`Successfully retrieved character ${dto.characterId}`);
-    return character.getReadType();
+    return isRaw ? character : character.getReadType();
   }
 
   async createCharacter(dto: CreateCharacterDto) {
