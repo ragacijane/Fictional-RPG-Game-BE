@@ -9,9 +9,12 @@ import {
   Class,
   Duel,
   Item,
+  RpcErrorInterceptor,
 } from '@game-domain';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { DuelDomainService } from './domain/duel-domain.service';
 
 @Module({
   imports: [
@@ -42,6 +45,13 @@ import { ConfigModule } from '@nestjs/config';
     ]),
   ],
   controllers: [CombatController],
-  providers: [CombatService],
+  providers: [
+    DuelDomainService,
+    CombatService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RpcErrorInterceptor,
+    },
+  ],
 })
 export class CombatModule {}

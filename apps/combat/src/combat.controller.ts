@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { CombatService } from './combat.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { CreateDuelDto, DuelActionDto } from '@game-domain';

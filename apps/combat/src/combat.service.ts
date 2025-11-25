@@ -1,18 +1,14 @@
 import {
-  ATTACK_AVAILABILITY,
-  CAST_AVAILABILITY,
   Character,
   CHARACTER_CLIENT,
   CharacterItem,
   Class,
-  CombatAction,
   CreateDuelDto,
   Duel,
   DuelActionDto,
   DuelActionResponse,
   DuelStatus,
   GiftItemsDto,
-  HEAL_AVAILABILITY,
   Item,
 } from '@game-domain';
 import {
@@ -21,10 +17,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ClientProxy, RpcException } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { firstValueFrom } from 'rxjs';
 import { DataSource, MoreThanOrEqual, Repository } from 'typeorm';
+import { DuelDomainService } from './domain/duel-domain.service';
 
 @Injectable()
 export class CombatService {
@@ -36,10 +33,11 @@ export class CombatService {
     @InjectRepository(Duel)
     private readonly duelRepository: Repository<Duel>,
     private readonly dataSource: DataSource,
+    private readonly duelDomainService: DuelDomainService,
   ) {}
   async createDuel(dto: CreateDuelDto) {
     const now = new Date();
-
+    // Looking for duel that any character is participating
     const activeDuel = await this.duelRepository.findOne({
       where: [
         {
@@ -66,51 +64,34 @@ export class CombatService {
     });
 
     if (activeDuel) {
-      throw new RpcException(
-        new BadRequestException('Characters are already in duel.'),
-      );
+      throw new BadRequestException('Characters are already in duel.');
     }
 
-    try {
-      const characterOne = await firstValueFrom(
-        this.characterClient.send('character.getRawCharacter', {
-          characterId: dto.characterOneId,
-          isGameMaster: false,
-          accountId: dto.accountId,
-        }),
-      );
+    const characterOne = await firstValueFrom(
+      this.characterClient.send('character.getRawCharacter', {
+        characterId: dto.characterOneId,
+        isGameMaster: false,
+        accountId: dto.accountId,
+      }),
+    );
 
-      const characterTwo = await firstValueFrom(
-        this.characterClient.send('character.getRawCharacter', {
-          characterId: dto.characterTwoId,
-          isGameMaster: true,
-          accountId: '',
-        }),
-      );
+    const characterTwo = await firstValueFrom(
+      this.characterClient.send('character.getRawCharacter', {
+        characterId: dto.characterTwoId,
+        isGameMaster: true,
+        accountId: '',
+      }),
+    );
 
-      await this.syncCharacters(characterOne, characterTwo);
+    await this.syncCharacters(characterOne, characterTwo);
 
-      const newDuel = this.duelRepository.create({
-        ...dto,
-        maxDuelDuration: new Date(Date.now() + 5 * 60 * 1000),
-      });
+    const newDuel = this.duelRepository.create({
+      ...dto,
+      maxDuelDuration: new Date(Date.now() + 5 * 60 * 1000),
+    });
 
-      await this.duelRepository.save(newDuel);
-      return newDuel.id;
-    } catch (err: any) {
-      console.log('Error:', err);
-      if (err?.response && err?.status) {
-        throw new RpcException({
-          statusCode: err.response.statusCode ?? err.status,
-          message: err.response.message ?? err.message,
-        });
-      }
-
-      throw new RpcException({
-        statusCode: 500,
-        message: err?.message ?? 'Internal error in CombatService',
-      });
-    }
+    await this.duelRepository.save(newDuel);
+    return newDuel.id;
   }
 
   async duelAction(dto: DuelActionDto): Promise<DuelActionResponse> {
@@ -119,11 +100,10 @@ export class CombatService {
     const mainCharacter = await this.characterRepository.findOne({
       where: { id: dto.characterId, ownerId: dto.accountId },
     });
+
     if (!mainCharacter) {
-      throw new RpcException(
-        new NotFoundException(
-          `Character with id ${dto.characterId} doesnt exists for this account.`,
-        ),
+      throw new NotFoundException(
+        `Character with id ${dto.characterId} doesnt exists for this account.`,
       );
     }
 
@@ -140,151 +120,59 @@ export class CombatService {
           maxDuelDuration: MoreThanOrEqual(now),
         },
       ],
+      relations: ['characterOne', 'characterTwo'],
     });
 
     if (!duel) {
-      throw new RpcException(
-        new NotFoundException('There is no active duel for this character.'),
+      throw new NotFoundException(
+        'There is no active duel for this character.',
       );
     }
-    let opponentIndex = 1;
-    let lastAttack: Date | null = duel.lastAttackCharacterOneAt;
-    let lastCast: Date | null = duel.lastCastCharacterOneAt;
-    let lastHeal: Date | null = duel.lastHealCharacterOneAt;
-    let opponentCharacter = duel.characterOne;
 
-    if (duel.characterOneId == dto.characterId) {
-      opponentIndex = 2;
-      lastAttack = duel.lastAttackCharacterTwoAt;
-      lastCast = duel.lastCastCharacterTwoAt;
-      lastHeal = duel.lastHealCharacterTwoAt;
-      opponentCharacter = duel.characterTwo;
-    }
+    const actor = mainCharacter;
+    const opponent =
+      duel.characterOneId === dto.characterId
+        ? duel.characterTwo
+        : duel.characterOne;
 
-    let isFinished = false;
+    const { isFinished } = this.duelDomainService.applyAction(
+      duel,
+      actor,
+      opponent,
+      dto.action,
+      now,
+    );
 
-    switch (dto.action) {
-      case CombatAction.ATTACK: {
-        if (
-          lastAttack &&
-          !this.hasEnoughTimePassed(lastAttack, now, ATTACK_AVAILABILITY)
-        ) {
-          throw new RpcException(
-            new BadRequestException('Attack is not available now.'),
-          );
-        }
-        const charReadType = mainCharacter.getReadType();
-        const strength = charReadType.strength;
-        const agility = charReadType.agility;
-        console.log(`Attacking with power of ${strength + agility}`);
-        opponentCharacter.removeHealth(strength + agility);
-        if (opponentCharacter.health == 0) {
-          isFinished = true;
-        }
-        if (opponentIndex == 1) {
-          duel.lastAttackCharacterOneAt = now;
-        } else {
-          duel.lastAttackCharacterTwoAt = now;
-        }
-        break;
-      }
-      case CombatAction.CAST: {
-        if (
-          lastCast &&
-          !this.hasEnoughTimePassed(lastCast, now, CAST_AVAILABILITY)
-        ) {
-          throw new RpcException(
-            new BadRequestException('Cast is not available now.'),
-          );
-        }
-        opponentCharacter.removeHealth(
-          mainCharacter.getReadType().intelligence * 2,
-        );
-        if (opponentCharacter.health == 0) {
-          isFinished = true;
-        }
-        if (opponentIndex == 1) {
-          duel.lastCastCharacterOneAt = now;
-        } else {
-          duel.lastCastCharacterTwoAt = now;
-        }
-        break;
-      }
-      case CombatAction.HEAL: {
-        if (
-          lastHeal &&
-          !this.hasEnoughTimePassed(lastHeal, now, HEAL_AVAILABILITY)
-        ) {
-          throw new RpcException(
-            new BadRequestException('Heal is not available now.'),
-          );
-        }
-        mainCharacter.heal();
-        if (opponentIndex == 1) {
-          duel.lastHealCharacterOneAt = now;
-        } else {
-          duel.lastHealCharacterTwoAt = now;
-        }
-        break;
-      }
-    }
-
+    // Saving & gift
     await this.dataSource.transaction(async (manager) => {
       const characterRepo = manager.getRepository(Character);
       const duelRepo = manager.getRepository(Duel);
 
       if (isFinished) {
-        try {
-          duel.status = DuelStatus.FINISHED;
+        const dtoGiftItem: GiftItemsDto = {
+          senderCharacterId: opponent.id,
+          recieverCharacterId: actor.id,
+          itemId: opponent.items[0].itemId,
+          accountId: opponent.ownerId,
+        };
 
-          const dtoGiftItem: GiftItemsDto = {
-            senderCharacterId: opponentCharacter.id,
-            recieverCharacterId: mainCharacter.id,
-            itemId: opponentCharacter.items[0].itemId,
-            accountId: opponentCharacter.ownerId,
-          };
-
-          await firstValueFrom(
-            this.characterClient.send('character.getRawCharacter', dtoGiftItem),
-          );
-        } catch (err: any) {
-          console.log('Error:', err);
-          if (err?.response && err?.status) {
-            throw new RpcException({
-              statusCode: err.response.statusCode ?? err.status,
-              message: err.response.message ?? err.message,
-            });
-          }
-
-          throw new RpcException({
-            statusCode: 500,
-            message: err?.message ?? 'Internal error in CombatService',
-          });
-        }
+        await firstValueFrom(
+          this.characterClient.send('character.giftItem', dtoGiftItem),
+        );
       }
 
-      await characterRepo.save(mainCharacter);
-      await characterRepo.save(opponentCharacter);
+      await characterRepo.save(actor);
+      await characterRepo.save(opponent);
       await duelRepo.save(duel);
     });
 
     return {
       isFinished,
-      characterOneId: mainCharacter.id,
-      characterOneHealth: mainCharacter.health,
-      characterTwoId: opponentCharacter.id,
-      characterTwoHealth: opponentCharacter.health,
+      characterOneId: duel.characterOneId,
+      characterOneHealth: duel.characterOne.health,
+      characterTwoId: duel.characterTwoId,
+      characterTwoHealth: duel.characterTwo.health,
     };
-  }
-
-  private hasEnoughTimePassed(
-    date1: Date,
-    date2: Date,
-    seconds: number,
-  ): boolean {
-    const diffMs = Math.abs(date2.getTime() - date1.getTime());
-    const diffSeconds = diffMs / 1000;
-    return diffSeconds >= seconds;
   }
 
   private async syncCharacters(charOne: Character, charTwo: Character) {

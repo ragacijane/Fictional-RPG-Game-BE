@@ -19,3 +19,6 @@ export * from './dtos/combat.dto';
 
 // Constants
 export * from './constants/constants';
+
+// Interceptors
+export * from './interceptors/rpc-error.interceptor';

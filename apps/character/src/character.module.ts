@@ -2,8 +2,15 @@ import { Module } from '@nestjs/common';
 import { CharacterController } from './character.controller';
 import { CharacterService } from './character.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Character, CharacterItem, Class, Item } from '@game-domain';
+import {
+  Character,
+  CharacterItem,
+  Class,
+  Item,
+  RpcErrorInterceptor,
+} from '@game-domain';
 import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -24,6 +31,12 @@ import { ConfigModule } from '@nestjs/config';
     TypeOrmModule.forFeature([Character, Item, Class, CharacterItem]), // Repository
   ],
   controllers: [CharacterController],
-  providers: [CharacterService],
+  providers: [
+    CharacterService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RpcErrorInterceptor,
+    },
+  ],
 })
 export class CharacterModule {}

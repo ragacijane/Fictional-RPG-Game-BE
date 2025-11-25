@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccountController } from './account.controller';
 import { AccountService } from './account.service';
-import { Account } from '@game-domain';
+import { Account, RpcErrorInterceptor } from '@game-domain';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -29,6 +30,12 @@ import { ConfigModule } from '@nestjs/config';
     }),
   ],
   controllers: [AccountController],
-  providers: [AccountService],
+  providers: [
+    AccountService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RpcErrorInterceptor,
+    },
+  ],
 })
 export class AccountModule {}

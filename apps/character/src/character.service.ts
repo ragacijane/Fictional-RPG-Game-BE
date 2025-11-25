@@ -8,7 +8,6 @@ import {
   Item,
 } from '@game-domain';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateItemDto,
@@ -44,7 +43,7 @@ export class CharacterService {
       .getRawMany();
 
     if (!characters || characters.length === 0) {
-      throw new RpcException(new NotFoundException(`Characters not found.`));
+      throw new NotFoundException(`Characters not found.`);
     }
 
     console.log('Successfully retrieved all characters.');
@@ -70,10 +69,8 @@ export class CharacterService {
       where,
     });
     if (!character) {
-      throw new RpcException(
-        new NotFoundException(
-          `Character with id ${dto.characterId} not found.`,
-        ),
+      throw new NotFoundException(
+        `Character with id ${dto.characterId} not found.`,
       );
     }
     console.log(`Successfully retrieved character ${dto.characterId}`);
@@ -103,7 +100,7 @@ export class CharacterService {
       ])
       .getRawMany();
     if (!items) {
-      throw new RpcException(new NotFoundException('Items not found'));
+      throw new NotFoundException('Items not found');
     }
     console.log('Successfully retrieved all items.');
     return items;
@@ -115,9 +112,7 @@ export class CharacterService {
       where: { id: dto.itemId },
     });
     if (!item) {
-      throw new RpcException(
-        new NotFoundException(`Item with id ${dto.itemId} not found.`),
-      );
+      throw new NotFoundException(`Item with id ${dto.itemId} not found.`);
     }
     console.log(`Successfully retrieved item ${dto.itemId}`);
     const suffix = this.determineItemSuffix(item);
@@ -141,10 +136,8 @@ export class CharacterService {
       where: { id: dto.characterId, ownerId: dto.accountId },
     });
     if (!character) {
-      throw new RpcException(
-        new NotFoundException(
-          `Character with id ${dto.characterId} not found.`,
-        ),
+      throw new NotFoundException(
+        `Character with id ${dto.characterId} not found.`,
       );
     }
     const item = this.itemRepository.findOne({
@@ -152,9 +145,7 @@ export class CharacterService {
     });
 
     if (!item) {
-      throw new RpcException(
-        new NotFoundException(`Item with id ${dto.itemId} not found.`),
-      );
+      throw new NotFoundException(`Item with id ${dto.itemId} not found.`);
     }
 
     let charItem = await this.characterItemRepository.findOne({
@@ -191,10 +182,8 @@ export class CharacterService {
       where: { id: dto.senderCharacterId, ownerId: dto.accountId },
     });
     if (!senderCharacter) {
-      throw new RpcException(
-        new NotFoundException(
-          `Sender Character with id ${dto.senderCharacterId} not found.`,
-        ),
+      throw new NotFoundException(
+        `Sender Character with id ${dto.senderCharacterId} not found.`,
       );
     }
 
@@ -202,10 +191,8 @@ export class CharacterService {
       where: { id: dto.recieverCharacterId },
     });
     if (!recieverCharacter) {
-      throw new RpcException(
-        new NotFoundException(
-          `Reciever Character with id ${dto.recieverCharacterId} not found.`,
-        ),
+      throw new NotFoundException(
+        `Reciever Character with id ${dto.recieverCharacterId} not found.`,
       );
     }
 
@@ -214,9 +201,7 @@ export class CharacterService {
     });
 
     if (!item) {
-      throw new RpcException(
-        new NotFoundException(`Item with id ${dto.itemId} not found.`),
-      );
+      throw new NotFoundException(`Item with id ${dto.itemId} not found.`);
     }
 
     return this.dataSource.transaction(async (manager) => {
@@ -230,9 +215,7 @@ export class CharacterService {
       });
 
       if (!senderCharItem) {
-        throw new RpcException(
-          new NotFoundException('Item doesnt exists for sender character'),
-        );
+        throw new NotFoundException('Item doesnt exists for sender character');
       }
 
       if (senderCharItem.quantity === 1) {

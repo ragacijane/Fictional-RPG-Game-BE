@@ -1,7 +1,6 @@
 import { Account, LoginDto, RegisterDto } from '@game-domain';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -19,13 +18,13 @@ export class AccountService {
     });
 
     if (!account) {
-      throw new RpcException(new BadRequestException('Account doesnt exists.'));
+      throw new BadRequestException('Account doesnt exists.');
     }
 
     const passwordValid = await bcrypt.compare(dto.password, account.password);
 
     if (!passwordValid) {
-      throw new RpcException(new BadRequestException('Invalid password.'));
+      throw new BadRequestException('Invalid password.');
     }
 
     const payload = {
@@ -44,10 +43,8 @@ export class AccountService {
     });
 
     if (existingAccount) {
-      throw new RpcException(
-        new BadRequestException(
-          'Account with that username/email already exists.',
-        ),
+      throw new BadRequestException(
+        'Account with that username/email already exists.',
       );
     }
     const hashedPass = await bcrypt.hash(dto.password, 10);
