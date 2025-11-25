@@ -17,7 +17,7 @@ import {
   GrantItemsDto,
   ItemReadType,
 } from 'libs/game-domain/src/dtos/item.dto';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class CharacterService {
@@ -28,6 +28,7 @@ export class CharacterService {
     private readonly itemRepository: Repository<Item>,
     @InjectRepository(CharacterItem)
     private readonly characterItemRepository: Repository<CharacterItem>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async findAllCharacters(): Promise<AllCharactersListDto[]> {
@@ -217,52 +218,40 @@ export class CharacterService {
       );
     }
 
-    // Sender logic
-    let senderCharItem = await this.characterItemRepository.findOne({
-      where: {
-        character: { id: dto.senderCharacterId },
-        item: { id: dto.itemId },
-      },
-      relations: ['character', 'item'],
-    });
+    return this.dataSource.transaction(async (manager) => {
+      const charItemRepo = manager.getRepository(CharacterItem);
 
-    if (!senderCharItem) {
-      throw new RpcException(
-        new NotFoundException('Item doesnt exists for sender character.'),
-      );
-    }
-    senderCharItem.decQuantity();
+      const senderCharItem = await charItemRepo.findOne({
+        where: {
+          character: { id: dto.senderCharacterId },
+          item: { id: dto.itemId },
+        },
+      });
 
-    if (senderCharItem.quantity == 0) {
-      await this.characterItemRepository.delete({ id: senderCharItem.id });
-    } else {
-      await this.characterItemRepository.save(senderCharItem);
-    }
+      if (!senderCharItem) {
+        throw new RpcException(
+          new NotFoundException('Item doesnt exists for sender character'),
+        );
+      }
 
-    // Reciever logic
-    let recievedCharItem = await this.characterItemRepository.findOne({
-      where: {
-        character: { id: dto.recieverCharacterId },
-        item: { id: dto.itemId },
-      },
-      relations: ['character', 'item'],
-    });
+      if (senderCharItem.quantity === 1) {
+        senderCharItem.characterId = dto.recieverCharacterId;
+        await charItemRepo.save(senderCharItem);
+        return true;
+      }
 
-    if (recievedCharItem) {
-      recievedCharItem.incQuantity();
-    } else {
-      recievedCharItem = this.characterItemRepository.create({
+      senderCharItem.quantity -= 1;
+      await charItemRepo.save(senderCharItem);
+
+      const newCharItem = charItemRepo.create({
         characterId: dto.recieverCharacterId,
         itemId: dto.itemId,
         quantity: 1,
       });
-    }
 
-    await this.characterItemRepository.save(recievedCharItem);
-    console.log(
-      `Character ${dto.senderCharacterId} gifting item ${dto.itemId} to character ${dto.recieverCharacterId} SUCCESSFULLY`,
-    );
-    return;
+      await charItemRepo.save(newCharItem);
+      return true;
+    });
   }
 
   private determineItemSuffix(item: Item): string {
