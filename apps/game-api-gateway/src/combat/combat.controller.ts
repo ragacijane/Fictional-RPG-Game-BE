@@ -31,6 +31,7 @@ export class CombatAPIController {
 
   @Post(':duelId/:action')
   duelAttack(
+    @Req() req,
     @Param('duelId') duelId: string,
     @Param('action') action: string,
     @Body() body: { characterId: string },
@@ -60,6 +61,7 @@ export class CombatAPIController {
       duelId,
       characterId: body.characterId,
       action: actionEnum,
+      accountId: req.user.accountId,
     };
     return this.combatService.duelAction(dto);
   }

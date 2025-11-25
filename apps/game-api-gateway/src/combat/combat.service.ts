@@ -1,4 +1,9 @@
-import { COMBAT_CLIENT, CreateDuelDto, DuelActionDto } from '@game-domain';
+import {
+  COMBAT_CLIENT,
+  CreateDuelDto,
+  DuelActionDto,
+  DuelActionResponse,
+} from '@game-domain';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { CharacterAPIService } from '../character/character.service';
@@ -35,7 +40,18 @@ export class CombatAPIService {
       throw new BadRequestException(`Id is invalid ${dto.duelId}`);
     }
     try {
-      return await firstValueFrom(this.combatClient.send('combat.action', dto));
+      const result: DuelActionResponse = await firstValueFrom(
+        this.combatClient.send('combat.action', dto),
+      );
+      if (result.isFinished) {
+        await this.characterService.invalidateCharacterCache(
+          result.characterOneId,
+        );
+        await this.characterService.invalidateCharacterCache(
+          result.characterTwoId,
+        );
+      }
+      return result;
     } catch (error) {
       throw error;
     }

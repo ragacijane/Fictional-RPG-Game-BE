@@ -13,4 +13,13 @@ export type DuelActionDto = {
   action: CombatAction;
   characterId: string;
   duelId: string;
+  accountId: string;
+};
+
+export type DuelActionResponse = {
+  isFinished: boolean;
+  characterOneId: string;
+  characterOneHealth: number;
+  characterTwoId: string;
+  characterTwoHealth;
 };

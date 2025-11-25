@@ -60,6 +60,18 @@ export class Character {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  public heal() {
+    this.health += this.getReadType().faith;
+  }
+
+  public removeHealth(value: number) {
+    if (value > this.health) {
+      this.health = 0;
+    } else {
+      this.health -= value;
+    }
+  }
+
   public getReadType(): CharacterReadType {
     let strength = this.baseStrength;
     let agility = this.baseAgility;
