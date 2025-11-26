@@ -31,12 +31,8 @@ export class CombatAPIService {
         this.combatClient.send('combat.action', dto),
       );
       if (result.isFinished) {
-        await this.characterService.invalidateCharacterCache(
-          result.characterOneId,
-        );
-        await this.characterService.invalidateCharacterCache(
-          result.characterTwoId,
-        );
+        await this.characterService.invalidateCharacterCache(result.actor);
+        await this.characterService.invalidateCharacterCache(result.opponent);
       }
       return result;
     } catch (error) {

@@ -131,6 +131,7 @@ export class CharacterAPIService {
   }
 
   async invalidateCharacterCache(characterId: string) {
+    console.log(`Invalidating data for characterId ${characterId}`);
     await this.cache.del(characterId);
   }
 }

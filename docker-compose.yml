@@ -114,6 +114,8 @@ services:
       - COMBAT_DB_NAME=${COMBAT_DB_NAME}
       - COMBAT_HOST=${DOCKER_COMBAT_HOST}
       - COMBAT_PORT=${COMBAT_PORT}
+      - CHARACTER_HOST=${DOCKER_CHARACTER_HOST}
+      - CHARACTER_PORT=${CHARACTER_PORT}
 
   combat-db:
     image: postgres:16-alpine
