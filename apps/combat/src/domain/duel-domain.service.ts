@@ -1,4 +1,3 @@
-// combat/domain/duel-domain.service.ts
 import {
   ATTACK_AVAILABILITY,
   CAST_AVAILABILITY,
