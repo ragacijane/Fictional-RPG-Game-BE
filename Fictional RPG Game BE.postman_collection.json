@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"test-password-1\"\r\n}",
+							"raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"test-password-1\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -34,7 +34,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Luka test 1\",\r\n    \"email\": \"test2@gmail.com\",\r\n    \"username\": \"luka\",\r\n    \"password\": \"test-password-3\"\r\n}",
+							"raw": "{\r\n    \"name\": \"Luka test 3\",\r\n    \"email\": \"test4@gmail.com\",\r\n    \"username\": \"lukacar\",\r\n    \"password\": \"test-password-3\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -91,7 +91,7 @@
 							"variable": [
 								{
 									"key": "characterId",
-									"value": "7662b616-0b29-49c0-ad10-7d01c211ca3c"
+									"value": "8f6ff946-30b1-4a4a-ad6f-ed92eef7c1ad"
 								}
 							]
 						}
@@ -159,7 +159,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"Arthas\",\r\n  \"health\": 100,\r\n  \"mana\": 50,\r\n  \"baseStrength\": 10,\r\n  \"baseAgility\": 8,\r\n  \"baseIntelligence\": 6,\r\n  \"baseFaith\": 4,\r\n  \"classId\": \"690b83ce-4611-4d4c-bc8a-bfebbed2c854\"\r\n}\r\n",
+							"raw": "{\r\n  \"name\": \"Arthas\",\r\n  \"health\": 100,\r\n  \"mana\": 50,\r\n  \"baseStrength\": 10,\r\n  \"baseAgility\": 8,\r\n  \"baseIntelligence\": 6,\r\n  \"baseFaith\": 4,\r\n  \"classId\": \"ce016d9b-fcca-4dea-926a-18822ed6bf6a\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -207,7 +207,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"characterId\":\"7662b616-0b29-49c0-ad10-7d01c211ca3c\",\r\n    \"itemId\":\"953357e9-9804-43aa-bf01-14c2306fb8f6\"\r\n}",
+							"raw": "{\r\n    \"characterId\":\"73723779-b264-4f44-87fc-51005abbe487\",\r\n    \"itemId\":\"1476a2fc-fda5-4ea1-93e2-cd5ef4ccb866\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -224,14 +224,14 @@
 						"auth": {
 							"type": "bearer",
 							"bearer": {
-								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MTFhY2RiZC05N2U4LTRiOTEtYmViYy0wNTA0YmEwM2Y1NmQiLCJyb2xlIjoiR2FtZU1hc3RlciIsImlhdCI6MTc2Mzc0NDEzMCwiZXhwIjoxNzYzNzgwMTMwfQ.XslPLD4aL7t6rKjUtQSOewY5rd4-VESIBLc7PssG0tk"
+								"token": "{{access_token}}"
 							}
 						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"senderCharacterId\":\"66e849fd-65ff-4200-8bc6-e91f38fd100d\",\r\n    \"recieverCharacterId\":\"189d62fc-368e-4d5e-bee1-71d3b70f5f3c\",\r\n    \"itemId\":\"2f6d8cda-234f-4df4-89b2-dbd56d5bb5e8\"\r\n}",
+							"raw": "{\r\n    \"senderCharacterId\":\"8f6ff946-30b1-4a4a-ad6f-ed92eef7c1ad\",\r\n    \"recieverCharacterId\":\"aec0a925-8847-412e-b22b-5a8e91090226\",\r\n    //     \"senderCharacterId\":\"aec0a925-8847-412e-b22b-5a8e91090226\",\r\n    // \"recieverCharacterId\":\"8f6ff946-30b1-4a4a-ad6f-ed92eef7c1ad\",\r\n    \"itemId\":\"25406bcb-9e8b-4a6b-bea3-4192b270e228\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -260,7 +260,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"characterOneId\": \"66e849fd-65ff-4200-8bc6-e91f38fd100d\",\r\n    \"characterTwoId\": \"189d62fc-368e-4d5e-bee1-71d3b70f5f3c\"\r\n}",
+							"raw": "{\r\n    \"characterOneId\": \"8f6ff946-30b1-4a4a-ad6f-ed92eef7c1ad\",\r\n    \"characterTwoId\": \"aec0a925-8847-412e-b22b-5a8e91090226\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -274,11 +274,17 @@
 				{
 					"name": "Duel Action",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{access_token}}"
+							}
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"characterId\":\"f67ae986-3539-45f2-bc6b-d4bbb324de64\"\r\n}",
+							"raw": "{\r\n    // \"characterId\":\"8f6ff946-30b1-4a4a-ad6f-ed92eef7c1ad\"\r\n    \"characterId\":\"aec0a925-8847-412e-b22b-5a8e91090226\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -300,11 +306,11 @@
 							"variable": [
 								{
 									"key": "duelId",
-									"value": "1e8109f0-c980-4bd0-8699-bcca45380b7b"
+									"value": "8846053f-592b-49d4-b765-9cde3789fcfd"
 								},
 								{
 									"key": "action",
-									"value": "cast"
+									"value": "attack"
 								}
 							]
 						}
