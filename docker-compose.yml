@@ -56,9 +56,9 @@ services:
     container_name: account-db
     restart: unless-stopped
     environment:
-      - POSTGRES_USER='${ACCOUNT_DB_USER}'
-      - POSTGRES_PASSWORD='${ACCOUNT_DB_PASS}'
-      - POSTGRES_DB='${ACCOUNT_DB_NAME}'
+      - POSTGRES_USER=${ACCOUNT_DB_USER}
+      - POSTGRES_PASSWORD=${ACCOUNT_DB_PASS}
+      - POSTGRES_DB=${ACCOUNT_DB_NAME}
     ports:
       - '${ACCOUNT_DB_PORT}:${ACCOUNT_DB_PORT}'
     volumes:
@@ -120,9 +120,9 @@ services:
     container_name: combat-db
     restart: unless-stopped
     environment:
-      - POSTGRES_USER='${COMBAT_DB_USER}'
-      - POSTGRES_PASSWORD='${COMBAT_DB_PASS}'
-      - POSTGRES_DB='${COMBAT_DB_NAME}'
+      - POSTGRES_USER=${COMBAT_DB_USER}
+      - POSTGRES_PASSWORD=${COMBAT_DB_PASS}
+      - POSTGRES_DB=${COMBAT_DB_NAME}
     command: ['postgres', '-p', '${COMBAT_DB_PORT}']
     ports:
       - '${COMBAT_DB_PORT}:${COMBAT_DB_PORT}'

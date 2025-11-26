@@ -1,3 +1,4 @@
+import { IsNotEmpty } from 'class-validator';
 import { ItemReadType } from './item.dto';
 
 export type FindOneCharacterDto = {
@@ -6,16 +7,24 @@ export type FindOneCharacterDto = {
   isGameMaster: boolean;
 };
 
-export type CreateCharacterBody = {
+export class CreateCharacterBody {
+  @IsNotEmpty()
   name: string;
+  @IsNotEmpty()
   health: number;
+  @IsNotEmpty()
   mana: number;
+  @IsNotEmpty()
   baseStrength: number;
+  @IsNotEmpty()
   baseAgility: number;
+  @IsNotEmpty()
   baseIntelligence: number;
+  @IsNotEmpty()
   baseFaith: number;
+  @IsNotEmpty()
   classId: string;
-};
+}
 
 export type CreateCharacterDto = CreateCharacterBody & {
   ownerId: string;

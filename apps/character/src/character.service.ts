@@ -42,7 +42,7 @@ export class CharacterService {
       ])
       .getRawMany();
 
-    if (!characters || characters.length === 0) {
+    if (!characters.length) {
       throw new NotFoundException(`Characters not found.`);
     }
 
@@ -99,7 +99,7 @@ export class CharacterService {
         'item.bonusFaith AS bonusFaith',
       ])
       .getRawMany();
-    if (!items) {
+    if (!items.length) {
       throw new NotFoundException('Items not found');
     }
     console.log('Successfully retrieved all items.');
@@ -132,7 +132,7 @@ export class CharacterService {
 
   async grantItem(dto: GrantItemsDto) {
     console.log(`Character ${dto.characterId} granting item ${dto.itemId}`);
-    const character = this.characterRepository.findOne({
+    const character = await this.characterRepository.findOne({
       where: { id: dto.characterId, ownerId: dto.accountId },
     });
     if (!character) {
@@ -140,7 +140,7 @@ export class CharacterService {
         `Character with id ${dto.characterId} not found.`,
       );
     }
-    const item = this.itemRepository.findOne({
+    const item = await this.itemRepository.findOne({
       where: { id: dto.itemId },
     });
 
@@ -178,7 +178,7 @@ export class CharacterService {
       `Character ${dto.senderCharacterId} gifting item ${dto.itemId} to character ${dto.recieverCharacterId}`,
     );
 
-    const senderCharacter = this.characterRepository.findOne({
+    const senderCharacter = await this.characterRepository.findOne({
       where: { id: dto.senderCharacterId, ownerId: dto.accountId },
     });
     if (!senderCharacter) {
@@ -187,7 +187,7 @@ export class CharacterService {
       );
     }
 
-    const recieverCharacter = this.characterRepository.findOne({
+    const recieverCharacter = await this.characterRepository.findOne({
       where: { id: dto.recieverCharacterId },
     });
     if (!recieverCharacter) {
@@ -196,7 +196,7 @@ export class CharacterService {
       );
     }
 
-    const item = this.itemRepository.findOne({
+    const item = await this.itemRepository.findOne({
       where: { id: dto.itemId },
     });
 

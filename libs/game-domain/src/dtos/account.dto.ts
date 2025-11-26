@@ -1,11 +1,19 @@
-export type LoginDto = {
-  username: string;
-  password: string;
-};
+import { IsNotEmpty } from 'class-validator';
 
-export type RegisterDto = {
-  name: string;
-  email: string;
+export class LoginDto {
+  @IsNotEmpty()
   username: string;
+  @IsNotEmpty()
   password: string;
-};
+}
+
+export class RegisterDto {
+  @IsNotEmpty()
+  name: string;
+  @IsNotEmpty()
+  email: string;
+  @IsNotEmpty()
+  username: string;
+  @IsNotEmpty()
+  password: string;
+}
