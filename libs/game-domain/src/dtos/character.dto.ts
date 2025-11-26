@@ -1,11 +1,17 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsUUID } from 'class-validator';
 import { ItemReadType } from './item.dto';
 
-export type FindOneCharacterDto = {
+export class FindOneCharacterDto {
+  @IsNotEmpty()
+  @IsUUID()
   accountId: string;
+  @IsNotEmpty()
+  @IsUUID()
   characterId: string;
+  @IsNotEmpty()
+  @IsUUID()
   isGameMaster: boolean;
-};
+}
 
 export class CreateCharacterBody {
   @IsNotEmpty()

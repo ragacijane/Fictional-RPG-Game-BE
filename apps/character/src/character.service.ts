@@ -209,31 +209,53 @@ export class CharacterService {
 
       const senderCharItem = await charItemRepo.findOne({
         where: {
-          character: { id: dto.senderCharacterId },
-          item: { id: dto.itemId },
+          characterId: dto.senderCharacterId,
+          itemId: dto.itemId,
         },
       });
 
       if (!senderCharItem) {
         throw new NotFoundException('Item doesnt exists for sender character');
       }
-
-      if (senderCharItem.quantity === 1) {
-        senderCharItem.characterId = dto.recieverCharacterId;
-        await charItemRepo.save(senderCharItem);
-        return true;
-      }
-
-      senderCharItem.quantity -= 1;
-      await charItemRepo.save(senderCharItem);
-
-      const newCharItem = charItemRepo.create({
-        characterId: dto.recieverCharacterId,
-        itemId: dto.itemId,
-        quantity: 1,
+      let recieverCharItem = await charItemRepo.findOne({
+        where: {
+          characterId: dto.recieverCharacterId,
+          itemId: dto.itemId,
+        },
       });
 
-      await charItemRepo.save(newCharItem);
+      if (senderCharItem.quantity == 1) {
+        if (recieverCharItem) {
+          console.log('Char Items: sender qty = 1, reciever exists');
+          recieverCharItem.quantity += 1;
+          await charItemRepo.save(recieverCharItem);
+          await charItemRepo.delete({
+            id: senderCharItem.id,
+          });
+        } else {
+          console.log('Char Items: sender qty = 1, reciever not exist');
+          senderCharItem.characterId = dto.recieverCharacterId;
+          await charItemRepo.save(senderCharItem);
+        }
+      } else {
+        senderCharItem.quantity -= 1;
+        await charItemRepo.save(senderCharItem);
+
+        if (!recieverCharItem) {
+          console.log('Char Items: sender qty > 1, reciever not exist');
+          recieverCharItem = charItemRepo.create({
+            characterId: dto.recieverCharacterId,
+            itemId: dto.itemId,
+            quantity: 1,
+          });
+        } else {
+          console.log('Char Items: sender qty > 1, reciever exists');
+
+          recieverCharItem.quantity += 1;
+        }
+        await charItemRepo.save(recieverCharItem);
+      }
+
       return true;
     });
   }

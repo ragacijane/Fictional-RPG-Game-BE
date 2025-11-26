@@ -1,25 +1,37 @@
+import { IsNotEmpty, IsUUID } from 'class-validator';
 import { CombatAction } from '../enums/combat-action.enum';
 
-export type CreateDuelBody = {
+export class CreateDuelBody {
+  @IsNotEmpty()
+  @IsUUID()
   characterOneId: string;
+  @IsNotEmpty()
+  @IsUUID()
   characterTwoId: string;
-};
+}
 
 export type CreateDuelDto = CreateDuelBody & {
   accountId: string;
 };
 
-export type DuelActionDto = {
+export class DuelActionDto {
+  @IsNotEmpty()
   action: CombatAction;
+  @IsNotEmpty()
+  @IsUUID()
   characterId: string;
+  @IsNotEmpty()
+  @IsUUID()
   duelId: string;
+  @IsNotEmpty()
+  @IsUUID()
   accountId: string;
-};
+}
 
 export type DuelActionResponse = {
   isFinished: boolean;
-  characterOneId: string;
-  characterOneHealth: number;
-  characterTwoId: string;
-  characterTwoHealth;
+  actor: string;
+  actorHealth: number;
+  opponent: string;
+  opponentHealth: number;
 };

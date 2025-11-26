@@ -83,6 +83,10 @@ export class CombatService {
       }),
     );
 
+    if (!characterOne.items[0]?.item || !characterTwo.items[0]?.item) {
+      throw new Error('Characters need at least 1 item to start a duel.');
+    }
+    console.log('Sync characters from character service');
     await this.syncCharacters(characterOne, characterTwo);
 
     const newDuel = this.duelRepository.create({
@@ -91,21 +95,28 @@ export class CombatService {
     });
 
     await this.duelRepository.save(newDuel);
+    console.log('Duel started');
     return newDuel.id;
   }
 
   async duelAction(dto: DuelActionDto): Promise<DuelActionResponse> {
+    console.log(
+      `Starting duel action, fetching characters in duel ${dto.duelId}`,
+    );
     const now = new Date();
 
-    const mainCharacter = await this.characterRepository.findOne({
+    const actorCharacter = await this.characterRepository.findOne({
       where: { id: dto.characterId, ownerId: dto.accountId },
     });
 
-    if (!mainCharacter) {
+    if (!actorCharacter) {
       throw new NotFoundException(
-        `Character with id ${dto.characterId} doesnt exists for this account.`,
+        `Character with id ${dto.characterId} doesnt exists for this account in duel ${dto.duelId}`,
       );
     }
+    console.log(
+      `Actor character id ${actorCharacter.id} in duel ${dto.duelId}`,
+    );
 
     const duel = await this.duelRepository.findOne({
       where: [
@@ -125,11 +136,11 @@ export class CombatService {
 
     if (!duel) {
       throw new NotFoundException(
-        'There is no active duel for this character.',
+        `There is no active duel for this character. in duel ${dto.duelId}`,
       );
     }
 
-    const actor = mainCharacter;
+    const actor = actorCharacter;
     const opponent =
       duel.characterOneId === dto.characterId
         ? duel.characterTwo
@@ -144,20 +155,23 @@ export class CombatService {
     );
 
     // Saving & gift
+    console.log(`Saving data & sending item if needed in duel ${dto.duelId}`);
     await this.dataSource.transaction(async (manager) => {
       const characterRepo = manager.getRepository(Character);
       const duelRepo = manager.getRepository(Duel);
-
+      const index = this.randomInt(opponent.items.length);
+      console.log(`Random index is ${index}`);
       if (isFinished) {
+        console.log(`Gifting item with id ${opponent.items[index].itemId}`);
         const dtoGiftItem: GiftItemsDto = {
           senderCharacterId: opponent.id,
           recieverCharacterId: actor.id,
-          itemId: opponent.items[0].itemId,
+          itemId: opponent.items[index].itemId,
           accountId: opponent.ownerId,
         };
 
         await firstValueFrom(
-          this.characterClient.send('character.giftItem', dtoGiftItem),
+          this.characterClient.send('items.gift', dtoGiftItem),
         );
       }
 
@@ -165,13 +179,13 @@ export class CombatService {
       await characterRepo.save(opponent);
       await duelRepo.save(duel);
     });
-
+    console.log(`Characters successfully updated! in duel ${dto.duelId}`);
     return {
       isFinished,
-      characterOneId: duel.characterOneId,
-      characterOneHealth: duel.characterOne.health,
-      characterTwoId: duel.characterTwoId,
-      characterTwoHealth: duel.characterTwo.health,
+      actor: actor.id,
+      actorHealth: actor.health,
+      opponent: opponent.id,
+      opponentHealth: opponent.health,
     };
   }
 
@@ -233,5 +247,12 @@ export class CombatService {
         }
       }
     });
+  }
+
+  private randomInt(n: number): number {
+    if (n <= 0) {
+      throw new Error('n must be a positive integer');
+    }
+    return Math.floor(Math.random() * n);
   }
 }

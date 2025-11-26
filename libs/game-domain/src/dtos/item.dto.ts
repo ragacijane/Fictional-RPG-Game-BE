@@ -1,31 +1,53 @@
-export type FindOneItemDto = {
+import { IsUUID, IsNotEmpty } from 'class-validator';
+
+export class FindOneItemDto {
+  @IsNotEmpty()
+  @IsUUID()
   itemId: string;
+  @IsNotEmpty()
+  @IsUUID()
   accountId: string;
-};
+}
 
-export type CreateItemDto = {
+export class CreateItemDto {
+  @IsNotEmpty()
   name: string;
+  @IsNotEmpty()
   description: string;
+  @IsNotEmpty()
   bonusStrength: number;
+  @IsNotEmpty()
   bonusAgility: number;
+  @IsNotEmpty()
   bonusIntelligence: number;
+  @IsNotEmpty()
   bonusFaith: number;
-};
+}
 
-export type GrantItemBody = {
+export class GrantItemBody {
+  @IsNotEmpty()
+  @IsUUID()
   characterId: string;
+  @IsNotEmpty()
+  @IsUUID()
   itemId: string;
-};
+}
 
 export type GrantItemsDto = GrantItemBody & {
   accountId: string;
 };
 
-export type GiftItemsBody = {
+export class GiftItemsBody {
+  @IsNotEmpty()
+  @IsUUID()
   senderCharacterId: string;
+  @IsNotEmpty()
+  @IsUUID()
   recieverCharacterId: string;
+  @IsNotEmpty()
+  @IsUUID()
   itemId: string;
-};
+}
 
 export type GiftItemsDto = GiftItemsBody & {
   accountId: string;

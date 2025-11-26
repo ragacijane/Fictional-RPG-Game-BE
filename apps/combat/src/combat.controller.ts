@@ -14,6 +14,7 @@ export class CombatController {
 
   @MessagePattern('combat.action')
   async duelAction(dto: DuelActionDto) {
+    console.log('Starting duel action');
     return this.combatService.duelAction(dto);
   }
 }

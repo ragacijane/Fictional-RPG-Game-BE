@@ -16,7 +16,6 @@ import {
 } from 'libs/game-domain/src/dtos/item.dto';
 import { firstValueFrom } from 'rxjs';
 import { Cache } from '@nestjs/cache-manager';
-import { validate as uuidValidate } from 'uuid';
 
 @Injectable()
 export class CharacterAPIService {
@@ -40,10 +39,6 @@ export class CharacterAPIService {
 
   async findOneCharacter(dto: FindOneCharacterDto): Promise<CharacterReadType> {
     console.log('Following find character to Character service');
-
-    if (!uuidValidate(dto.characterId)) {
-      throw new BadRequestException(`Id is invalid ${dto.characterId}`);
-    }
 
     const cached = await this.cache.get<CharacterReadType>(dto.characterId);
 
@@ -90,10 +85,6 @@ export class CharacterAPIService {
   async findOneItem(dto: FindOneItemDto) {
     console.log('Following find item to Character service');
 
-    if (!uuidValidate(dto.itemId)) {
-      throw new BadRequestException(`Id is invalid ${dto.itemId}`);
-    }
-
     try {
       return await firstValueFrom(
         this.characterClient.send('items.findOne', dto),
@@ -116,12 +107,7 @@ export class CharacterAPIService {
 
   async grantItem(dto: GrantItemsDto) {
     console.log('Following grant item to Character service');
-    if (!uuidValidate(dto.characterId)) {
-      throw new BadRequestException(`Id is invalid ${dto.characterId}`);
-    }
-    if (!uuidValidate(dto.itemId)) {
-      throw new BadRequestException(`Id is invalid ${dto.itemId}`);
-    }
+
     try {
       await firstValueFrom(this.characterClient.send('items.grant', dto));
 
@@ -133,15 +119,7 @@ export class CharacterAPIService {
 
   async giftItem(dto: GiftItemsDto) {
     console.log('Following gift item to Character service');
-    if (!uuidValidate(dto.senderCharacterId)) {
-      throw new BadRequestException(`Id is invalid ${dto.senderCharacterId}`);
-    }
-    if (!uuidValidate(dto.recieverCharacterId)) {
-      throw new BadRequestException(`Id is invalid ${dto.recieverCharacterId}`);
-    }
-    if (!uuidValidate(dto.itemId)) {
-      throw new BadRequestException(`Id is invalid ${dto.itemId}`);
-    }
+
     try {
       await firstValueFrom(this.characterClient.send('items.gift', dto));
 

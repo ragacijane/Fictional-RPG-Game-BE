@@ -61,6 +61,7 @@ export class Character {
   updatedAt: Date;
 
   public heal() {
+    console.log(`Healing for ${this.getReadType().faith}`);
     this.health += this.getReadType().faith;
   }
 

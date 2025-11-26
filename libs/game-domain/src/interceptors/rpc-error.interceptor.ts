@@ -13,6 +13,7 @@ export class RpcErrorInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       catchError((err) => {
+        console.error(err);
         if (err instanceof RpcException) {
           return throwError(() => err);
         }

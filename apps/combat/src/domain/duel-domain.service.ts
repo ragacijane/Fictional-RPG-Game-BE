@@ -51,14 +51,13 @@ export class DuelDomainService {
         }
 
         const charReadType = actor.getReadType();
-        const strength = charReadType.strength;
-        const agility = charReadType.agility;
-
-        opponent.removeHealth(strength + agility);
+        const power = charReadType.strength + charReadType.agility;
+        console.log(`Attacking with power of ${power}`);
+        opponent.removeHealth(power);
         if (opponent.health === 0) {
           isFinished = true;
         }
-
+        console.log(`Opponent remain on ${opponent.health} health.`);
         if (isCharacterOne) {
           duel.lastAttackCharacterOneAt = now;
         } else {
@@ -74,11 +73,14 @@ export class DuelDomainService {
         ) {
           throw new BadRequestException('Cast is not available now.');
         }
+        const power = actor.getReadType().intelligence * 2;
+        console.log(`Casting with power of ${power}`);
 
-        opponent.removeHealth(actor.getReadType().intelligence * 2);
+        opponent.removeHealth(power);
         if (opponent.health === 0) {
           isFinished = true;
         }
+        console.log(`Opponent remain on ${opponent.health} health.`);
 
         if (isCharacterOne) {
           duel.lastCastCharacterOneAt = now;
